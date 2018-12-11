@@ -24,9 +24,6 @@
     <ClCompile Include="GraphParameters_163.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\LSAOPP_GP\19TVS\19TVS\GetParam.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Coordinates_definition_163.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,12 +51,12 @@
     <ClCompile Include="PaintSoloTvs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GetParam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphParameters_163.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\LSAOPP_GP\19TVS\19TVS\GetParam.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="163CommonHeader.h">
@@ -75,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="kk_calculating.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GetParam.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

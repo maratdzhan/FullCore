@@ -115,13 +115,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\LSAOPP_GP\19TVS\19TVS\GetParam.cpp" />
     <ClCompile Include="Assemblies_Object.cpp" />
     <ClCompile Include="Calculate_core.cpp" />
     <ClCompile Include="ConsoleColor.cpp" />
     <ClCompile Include="Coordinates_definition_163.cpp" />
     <ClCompile Include="Core_Objects_Handler.cpp" />
     <ClCompile Include="Extraction_KQ.cpp" />
+    <ClCompile Include="GetParam.cpp" />
     <ClCompile Include="GraphParameters_163.cpp" />
     <ClCompile Include="kk_calculating.cpp" />
     <ClCompile Include="main_163.cpp" />
@@ -130,11 +130,11 @@
     <ClCompile Include="PaintSoloTvs.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\LSAOPP_GP\19TVS\19TVS\GetParam.h" />
     <ClInclude Include="163CommonHeader.h" />
     <ClInclude Include="Assemblies_Object.h" />
     <ClInclude Include="Coordinates_Definition.h" />
     <ClInclude Include="Extraction.h" />
+    <ClInclude Include="GetParam.h" />
     <ClInclude Include="GraphParameters_163.h" />
     <ClInclude Include="kk_calculating.h" />
   </ItemGroup>
