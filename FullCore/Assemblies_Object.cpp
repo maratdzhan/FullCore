@@ -10,7 +10,7 @@
 const short GEOM = 6;
 const short NUMBER_OF_FA=163;
 const double H_ASS = 234.8;
-double R_CORE = 0;// 4.500;
+double R_CORE = 3.5;
 double c_x[6] = { 1,0.5,-0.5,-1,-0.5,0.5 };
 double s_x[6] = { 0,-0.8660254,-0.8660254,0,0.8660254,0.8660254, };
 bool NOMINAL = 0;
@@ -34,8 +34,9 @@ struct FuelAssembly
 {
 	int neig[GEOM];
 	double gap_size[GEOM];
+	double gap_size_before_modifying[GEOM];
 	double corner_gap_size[GEOM];
-
+	bool modifier = false;
 	std::string p_const[GEOM];
 	std::string c_const[GEOM];
 	
@@ -298,7 +299,7 @@ void Gap_Define(int fa_num)
 
 		for (int j = 0; j < GEOM; j++)
 		{
-			fCore[fa_num].gap_size[j] = 1.50;
+			fCore[fa_num].gap_size[j] = 0;
 			if (fCore[fa_num].neig[j] > 0)
 			{
 
@@ -393,6 +394,7 @@ void CornerGapsDefinition(short fa_num)
 void Gap_Define_S(bool modifier, bool complex)
 {
 	// Проход <INITIALIZING>
+	fCore[0].modifier = modifier;
 	if (!complex)
 	{
 		printf("Calculating");
@@ -908,6 +910,7 @@ void ModifierAccounting(short tvs_num)
 		else
 			ro5 = fCore[tvs_num].x5;
 		double result = GetCorrection(cb, gam, ro5, fCore[tvs_num].gap_size[edge]);
+		fCore[tvs_num].gap_size_before_modifying[edge] = fCore[tvs_num].gap_size[edge];
 		fCore[tvs_num].gap_size[edge] = 1.0*result;
 	}
 }
@@ -915,8 +918,18 @@ void ModifierAccounting(short tvs_num)
 std::string ObjectExtracting(short param, short tvs, short edge)
 {
 	std::string str;
-	if (param == 1)
+	if (param == 2 && fCore[0].modifier == false) param = 1;
+	switch (param)
+	{
+	case 1:
 		str = std::to_string(fCore[tvs].gap_size[edge]);
+		break;
+	case 2:
+		str = std::to_string(fCore[tvs].gap_size_before_modifying[edge]);
+		break;
+	case 3:
+		str = std::to_string(fCore[tvs].gap_size_before_modifying[edge] + 1.5);
+	}
 
 	return str; 
 } 
@@ -1148,7 +1161,6 @@ void CoordsLoading(LoadingDatasType type)
 	case (tutnov):
 	{
 		double dx, dy, dr, psi = -9999;
-		R_CORE = 0;
 		for (short z = 1; z < k_size; z++)
 		{
 			str = (ParametersCoreThrow(false, z));

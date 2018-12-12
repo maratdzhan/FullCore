@@ -30,7 +30,7 @@ void fCore_Main(bool withMCs)
 	std::string s="-1";
 	int kl = 0;
 	bool initialized = false;
-	modifier = !withMCs;
+	modifier = withMCs;
 	HANDLE consoleHandle_CC = GetStdHandle(STD_OUTPUT_HANDLE);
 	//ListDefine();
 	// Загрузка профиля
@@ -145,7 +145,7 @@ void fCore_Main(bool withMCs)
 	//GetCurrentDirectory(100, current_path);
 	
 	
-//	system("PERMAK2007I.exe");
+	system("PERMAK2007I.exe");
 
 	kk_calculating();
 

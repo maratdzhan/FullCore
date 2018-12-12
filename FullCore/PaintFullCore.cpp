@@ -60,6 +60,7 @@ LRESULT CALLBACK WndGraph_163(HWND hGraph_163, UINT message, WPARAM wParam, LPAR
 		for (short i = 0; i < NUMBER_OF_FA; i++)
 		{
 			//// Ðèñîâêà ÒÂÑ
+		
 				x = (ReturnCoordinatesTvs(i + 1, true))*grid_pitch*scale;
 				y = (ReturnCoordinatesTvs(i + 1, false))*grid_pitch*scale;
 				SetViewportOrgEx(hdc, int(sx / 2 + x), (int)(sy / 2 - y), NULL);
