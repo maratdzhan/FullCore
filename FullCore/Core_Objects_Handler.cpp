@@ -23,7 +23,7 @@ int ProfileHandler(bool save,bool automatic, LoadingDatasType type)
 {
 //	
 	static TCHAR name[256] = _T(" ");
-	//HANDLE consoleHandle_COH = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE consoleHandle_COH = GetStdHandle(STD_OUTPUT_HANDLE);
 	static OPENFILENAME file;
 	std::ifstream inputFile;
 	std::ofstream outputFile;
@@ -86,6 +86,9 @@ int ProfileHandler(bool save,bool automatic, LoadingDatasType type)
 			// Оттуда извлекаются СТРОКОВЫЕ величины buffer[NUM], которые 
 			// туда записываются при чтении файла.
 			// Внутри функций <LOADING> определяется какие параметры извлекаются и как обрабатываются.
+
+			// ERF Если запускаем _ABS - сразу расчет
+			// если запускаем _TTN  - нужно прописывать END
 			if (type==absolute)
 				CoordsLoading(absolute);
 			if (type==tutnov)
