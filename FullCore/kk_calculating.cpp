@@ -69,7 +69,8 @@ void KK_values::ReadingPermakFile(std::string path)
 						getline(permFile, str1);
 						// Считали строку
 						// С 4 по 15 символ в другую строку записали
-						for (int kl = 4; kl < 15; kl++)
+						short str1Length = str1.length();
+						for (int kl = 4; kl < str1Length; kl++)
 						{
 							s_Full += str1[kl];
 						}
@@ -189,7 +190,7 @@ void KK_values::DeviationsCalculatings()
 		{
 			m_val = kk_values_m[tvs][tvel];
 			kk_dev[tvs][tvel] = 
-				(m_val > 0 ? (100 * (kk_values_p[tvs][tvel] - m_val) / m_val) : 0);
+				(m_val != 0 ? (100 * (kk_values_p[tvs][tvel] - m_val) / m_val) : 0);
 
 			if (kk_dev[tvs][tvel] > max_val) max_val = kk_dev[tvs][tvel];
 			if (kk_dev[tvs][tvel] < min_val) min_val = kk_dev[tvs][tvel];
@@ -206,7 +207,7 @@ void kk_calculating()
 
 	_chdir("D:/Vasiliev/PERMAK-A/XIPI_18L_W/");
 
-	system("READSQLITE.exe");
+//	system("READSQLITE.exe");
 
 	TVS.LoadingScheme();
 	TVS.LoadingMCU("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Kk_MCU.out");
