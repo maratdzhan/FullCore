@@ -508,7 +508,7 @@ void DisplayGapsSize(HDC hdc, short x, short y, short tvs_num)
 		// 2 - извлекаем неизмененную величину зазора
 		// если передаем больше 1, а модификатора нет - он использует 1 внутри программы
 		// 3 - особый тип извлекаемых данных (в задаче Тутнова это - (fCore[tvs].gap_size - 1.5)
-		str = ObjectExtracting(3, tvs_num, i);
+		str = ObjectExtracting(1, tvs_num, i); 
 		
 		if (str.size() > textLenght)
 		{

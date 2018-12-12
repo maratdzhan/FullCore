@@ -207,7 +207,7 @@ void kk_calculating()
 
 	_chdir("D:/Vasiliev/PERMAK-A/XIPI_18L_W/");
 
-//	system("READSQLITE.exe");
+	system("READSQLITE.exe");
 
 	TVS.LoadingScheme();
 	TVS.LoadingMCU("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Kk_MCU.out");
