@@ -9,8 +9,8 @@
 
 const short GEOM = 6;
 const short NUMBER_OF_FA=163;
-const double H_ASS = 234.8;
-double R_CORE = 3.5;
+const double H_ASS = 236;
+double R_CORE = 4.5;
 double c_x[6] = { 1,0.5,-0.5,-1,-0.5,0.5 };
 double s_x[6] = { 0,-0.8660254,-0.8660254,0,0.8660254,0.8660254, };
 bool NOMINAL = 0;
@@ -99,20 +99,25 @@ void FuelAssembly::Modifier(short tvs_num, bool isModifierUsed)
 
 void x5Define()
 {
+	// ERF - ¬с€ функци€ требует переработки , смотри комментарии
 	double x5values[19] = { 0,1.30,1.60,1.60,2.20,2.40,3.00,3.30,3.30,3.60,3.60,3.60,3.70,4.00,4.00,4.00,4.4,4.40,4.95, };
 	// сопл€
+	/*  ниже блок когда-то зачем-то добавл€ли... см. комментарий к "правильной форме"*/ 
 	std::map <int, int> value;
 	value[110] = 1.3;
 	value[115] = 2.2;
 	value[120] = 3.0;
 	value[13] = 4.0;
+
 	for (short tvs_num = 1; tvs_num < NUMBER_OF_FA + 1; tvs_num++)
 	{
 		short const_number = GetParam(fCore[tvs_num].main_parameters, 2);
 		fCore[tvs_num].x5 = value[const_number];
 	}
+	
 
-	/* ниже правильный вариант
+	/* ниже правильный вариант 
+	// он не используетс€ потому что fCore[tvs].x5 нужно определд€ть апирорно - иначе дикие значени€ среднего обогащени€
 	for (short tvs_num = 1; tvs_num < NUMBER_OF_FA+1; tvs_num++)
 	{
 		short const_number = GetParam(fCore[tvs_num].main_parameters, 2);
@@ -660,9 +665,9 @@ int ConstantMapping(double value, bool plane)
 	else
 	{
 		if (plane)
-			return 132;
+			return 109;
 		else
-			return 75;
+			return 67;
 	}
 }
 
