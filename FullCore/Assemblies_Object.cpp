@@ -13,6 +13,7 @@ const double H_ASS = 236;
 double R_CORE = 4.5;
 double c_x[6] = { 1,0.5,-0.5,-1,-0.5,0.5 };
 double s_x[6] = { 0,-0.8660254,-0.8660254,0,0.8660254,0.8660254, };
+// ERF - NOMINAL нужно определять через функцию
 bool NOMINAL = 0;
 HANDLE consoleHandle_AO = 0;
 void ModifierAccounting(short tvs);
@@ -293,7 +294,8 @@ void DefineMainAssemblyParameters()
 
 void Gap_Define(int fa_num)
 {
-	
+	// ERF - R_CORE тут не надо задавать
+	if (NOMINAL) R_CORE = 0;
 	double x1, x2, y1, y2, obs, shifting;
 	x1 = fCore[fa_num].x;
 	y1 = fCore[fa_num].y;
@@ -933,7 +935,7 @@ std::string ObjectExtracting(short param, short tvs, short edge)
 		str = std::to_string(fCore[tvs].gap_size_before_modifying[edge]);
 		break;
 	case 3:
-		str = std::to_string(fCore[tvs].gap_size_before_modifying[edge] + 1.5);
+		str = std::to_string(fCore[tvs].gap_size_before_modifying[edge] + 2);
 	}
 
 	return str; 

@@ -108,7 +108,7 @@ LRESULT CALLBACK WndGraph_163(HWND hGraph_163, UINT message, WPARAM wParam, LPAR
 					{
 						x_tvel = 1.02*ReturnCoordinatesTvel(tvel, true);
 						y_tvel =1.1*ReturnCoordinatesTvel(tvel, false);
-						hColoredbrush = CreateSolidBrush(ColorReference(i+1, tvel, _e_kk_mcu_current,_e_mcu_core_kk));
+						hColoredbrush = CreateSolidBrush(ColorReference(i+1, tvel, _e_kk_dev_current,_e_dev_core));
 						SelectObject(hdc, hColoredbrush);
 						Ellipse(hdc,
 							(0.45*(-x_tvel - TVEL_SIZE)),

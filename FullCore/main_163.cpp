@@ -47,6 +47,9 @@ ATOM RegisterGraph_SoloClass()
 
 int main()
 {
+	
+	
+
 	fCore_Main(true);
 
 	
@@ -66,6 +69,7 @@ int main()
 	
 	if (stoi(GraphParameters_163Return("DETAILED")))
 	{
+		// ERF - если нет папки, то данные не сохраняются никуда
 		RegisterGraph_SoloClass();
 		HGraph_Solo = CreateWindow(WinClassGraphName_Solo, _T("Картограмма кассеты"),
 			WS_SYSMENU | WS_POPUP | WS_VISIBLE | WS_THICKFRAME | WS_CAPTION,
