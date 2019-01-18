@@ -6,7 +6,7 @@
 #include<direct.h>
 
 TCHAR current_library_path[80] = "C:/Users/stu1/source/repos/FullCore/FullCore/";
-const double tvs_size = 236;
+const double tvs_size = 234.6;
 
 double ReturnCoordinatesTvs(short tvs, bool x)
 {

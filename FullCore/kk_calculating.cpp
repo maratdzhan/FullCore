@@ -228,7 +228,6 @@ void kk_calculating()
 	for (short tvs = 1; tvs < TVS.NUM_FA_ + 1; tvs++)
 	{
 		InnerTvsColorOrder(tvs);
-
 	}
 
 

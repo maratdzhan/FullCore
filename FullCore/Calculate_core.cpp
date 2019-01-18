@@ -38,14 +38,21 @@ void fCore_Main(bool withMCs)
 	ListDefine();
 
 	int err = -1;
-
+	printf("<NEW> - create new configuration\n");
+	printf("<LOAD> - to load common profile\n");
+	printf("<LOAD> parameters: \n");
+	printf("\t' -COORD' - load coords only\n");
+	printf("\t\t- '_ttn' - load datas from mr. Tutnov\n");
+	printf("\t\t- '_abs' - load absolute values of FA's center\n");
+	printf("<SAVE> - save current configuration\n");
 	
 
 	// Начинаем работу с зазорами
 	while ((s.find("END") == -1))
 	{
 		s.clear();
-		printf("Enter FA number to start shifting or 'END' to quit\n");
+		printf("Enter command of FA number\n");
+		
 		std::cin >> s;
 
 		
