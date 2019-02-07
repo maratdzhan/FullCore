@@ -137,7 +137,6 @@ void GraphParameters_163Load()
 	Coord_TextOutCore();
 
 	//// TEMPORARY
-	McukqRes_TEMPORARY();
 
 
 

@@ -66,7 +66,7 @@ int main()
 		int sy = (int)(110 * image_size*(scale_size / 2.));
 		RegisterGraph_163Class();
 
-
+		/*
 		HGraph_163 = CreateWindow(WinClassGraphName_163, _T("Картограмма зоны"),
 			WS_SYSMENU | WS_POPUP | WS_VISIBLE | WS_THICKFRAME | WS_CAPTION,
 			sx / 6, sy / 10, sx, sy, HWnd_163Parent, 0, hInst_ChildProcGraph_163, NULL);
@@ -85,6 +85,7 @@ int main()
 		}
 
 		void GraphParameters_163Clear();
+		*/
 	}
 	catch (std::exception & ex_1)
 	{

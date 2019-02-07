@@ -63,6 +63,33 @@ public:
 			}
 		}
 	}
+
+	void WriteKr()
+	{
+		std::string pm = "D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/";
+		std::ofstream p_kr(pm + "permak_kr.txt");
+		std::ofstream m_kr(pm + "mcu_kr.txt");
+		for (int tvs = 1; tvs < NUM_FA_ + 1; tvs++)
+		{
+			for (int tvel = 1; tvel < NUM_FR_ + 1; tvel++) {
+				p_kr << mcu_kr_val[tvs][tvel] <<std::endl;
+				m_kr << permak_kr_val[tvs][tvel] << std::endl;
+				if ((tvel >= 218) && (tvel <= 331))
+					WriteKrMy_FirstSecondRow(mcu_kr_val[tvs][tvel], permak_kr_val[tvs][tvel], tvs, tvel);
+			}
+		}
+	}
+
+	void WriteKrMy_FirstSecondRow(double _mcu, double _permak, int tvs, int tvel) {
+		std::string pm = "D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/";
+		std::ofstream p_kr(pm + "permak_first_second_row_kr.txt",std::ios::app);
+		std::ofstream m_kr(pm + "mcu_first_second_row_kr.txt", std::ios::app);
+		p_kr << _permak << " ; " << tvs << " ; " << tvel << " ; " << std::endl;
+		m_kr << _mcu << " ; " << tvs << " ; " << tvel << " ; " << std::endl;
+
+	}
+
+
 };
 
 KK_values TVS;
@@ -389,6 +416,7 @@ void kk_calculating()
 	TVS.AdditionalDeviations();
 	TVS.GetKq();
 	TVS.GetKR();
+	TVS.WriteKr();
 	TVS.BarChart();
 
 	int z1, z2;

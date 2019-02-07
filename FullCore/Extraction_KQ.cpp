@@ -55,10 +55,10 @@ void Extracting_KQ()
 	}
 
 	Writting_kq_permak();
-
+	McukqRes_TEMPORARY();
 	FA.close();
 	
-	kq_permak.clear();
+//	kq_permak.clear();
 }
 
 bool R_String(short string_num, bool reflector)

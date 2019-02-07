@@ -152,7 +152,7 @@ void fCore_Main(bool withMCs)
 	//GetCurrentDirectory(100, current_path);
 	
 	
-//	system("PERMAK2007I.exe");
+	system("PERMAK2007I.exe");
 
 	Extracting_KQ();
 	kk_calculating();
