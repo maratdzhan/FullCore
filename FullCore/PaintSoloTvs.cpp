@@ -3,6 +3,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include <xstring>
+#include <iostream>
 
 typedef std::basic_string<TCHAR, std::char_traits<TCHAR>,
 	std::allocator<TCHAR> > String;
@@ -27,8 +28,8 @@ LRESULT CALLBACK WndGraph_Solo(HWND hGraph_Solo, UINT message, WPARAM wParam_s, 
 	//message = WM_PAINT;
 
 	int map_size_t = 1;
-	double map_size_s = 2.1;
-	double map_size_tvs = 1.7;
+	double map_size_s = 3.1;
+	double map_size_tvs = 2.7;
 	double scale = 1.1;
 	double cart_pos_y = 25;
 	int mn = 2;
@@ -68,7 +69,9 @@ LRESULT CALLBACK WndGraph_Solo(HWND hGraph_Solo, UINT message, WPARAM wParam_s, 
 		{
 			SetViewportOrgEx(hdc, sx_S / 2, sy_S / 2 + cart_pos_y, NULL);	// центр текущего построения
 			// НОМЕР КАССЕТЫ
-			newFont = CreateFont(15, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial");
+			newFont = CreateFont(15, 0, 0, 0, 0, 0, 0, 0, 
+				DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, 
+				DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial");
 			oldFont = (HFONT)SelectObject(hdc, newFont);
 			std::string sss0 = "Fuel Assambly #" + std::to_string(tvs_kart);
 			TextOut(hdc, 0-2.5*sss0.length(), 0+sy_S/2-80, sss0.data(), sss0.size());
@@ -78,29 +81,35 @@ LRESULT CALLBACK WndGraph_Solo(HWND hGraph_Solo, UINT message, WPARAM wParam_s, 
 
 			for (int num = 1; num < 332; num++)
 			{
-				z1 = 1.5*ReturnCoordinatesTvel(num, false);
-				z2 = 1.6*ReturnCoordinatesTvel(num, true);
-				x = ((sx_S / 2) - z2 * map_size_s);
-				y = ((sy_S / 2) - z1 * map_size_s-cart_pos_y);
-				SetViewportOrgEx(hdc, x, y, NULL); // установка центра из которого начинается построение
+				try {
+					z1 = 1.5*ReturnCoordinatesTvel(num, false);
+					z2 = 1.6*ReturnCoordinatesTvel(num, true);
+					x = ((sx_S / 2) - z2 * map_size_s);
+					y = ((sy_S / 2) - z1 * map_size_s - cart_pos_y);
+					SetViewportOrgEx(hdc, x, y, NULL); // установка центра из которого начинается построение
 
-				BeginPath(hdc);
-				Polyline(hdc, pt_pos, 6);
-				CloseFigure(hdc);
-				EndPath(hdc);
+					BeginPath(hdc);
+					Polyline(hdc, pt_pos, 6);
+					CloseFigure(hdc);
+					EndPath(hdc);
 
-				if (coloredFR)
-					cBr = CreateSolidBrush(ColorReference(tvs_kart, num, _e_kk_dev_current,_e_dev_tvs));
-				else
-					cBr = CreateSolidBrush(RGB(0, 0, 0));
+					if (coloredFR)
+						cBr = CreateSolidBrush(ColorReference(tvs_kart, num, _e_kk_dev_current, _e_dev_tvs));
+					else
+						cBr = CreateSolidBrush(RGB(0, 0, 0));
 
-				SelectObject(hdc, cBr);
-				SetPolyFillMode(hdc, WINDING);
-				FillPath(hdc);
-				DeleteObject(cBr);
+					SelectObject(hdc, cBr);
+					SetPolyFillMode(hdc, WINDING);
+					FillPath(hdc);
+					DeleteObject(cBr);
 
-				TVS_Solo_TextOutCore(hdc, tvs_kart, num);
-				int debug_item_0 = 0;
+					TVS_Solo_TextOutCore(hdc, tvs_kart, num);
+					int debug_item_0 = 0;
+				}
+				catch (std::exception & EX_2)
+				{
+					std::cout << EX_2.what() << std::endl;
+				}
 			}
 				
 			std::string filename_tvs = "D:/Vasiliev_Others/CppTestDir/bin/data/tvs_kart/" + std::to_string(tvs_kart) + ".bmp";

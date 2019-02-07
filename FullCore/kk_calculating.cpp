@@ -17,6 +17,9 @@ public:
 	double kk_values_p[NUM_FA_+1][NUM_FR_+1];
 	double kk_values_m[NUM_FA_ + 1][NUM_FR_ + 1];
 	double kk_dev[NUM_FA_ + 1][NUM_FR_ + 1];
+	double kk_perturbance_value[NUM_FA_ + 1][NUM_FR_ + 1];
+	double additional_deviations[NUM_FA_ + 1][NUM_FR_ + 1];
+	double kk_additional_values[NUM_FA_ + 1][NUM_FR_ + 1];
 	double tvs_max_dev[NUM_FA_ + 1];
 	double tvs_min_dev[NUM_FA_ + 1];
 	double max_val=-1000, min_val = 1000;
@@ -30,6 +33,9 @@ public:
 	void LoadingScheme();
 	void LoadingMCU(std::string pathway);
 	void DeviationsCalculatings();
+	void AdditionalDeviations();
+	void GetPerturbatedValues();
+	void BarChart();
 };
 
 KK_values TVS;
@@ -177,6 +183,116 @@ void KK_values::LoadingMCU(std::string pathway)
 	mcuFile.close();
 }
 
+void KK_values::GetPerturbatedValues()
+{
+	std::ifstream iFile;
+	iFile.open("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Result_Nominal_MCU_Kk.out");
+	if (iFile.is_open()) {
+		std::string str1, s_Full;
+		short tvs = 0;
+		short num = 0;
+		double tmp;
+		int tvel = 0;
+		while (!iFile.eof())
+		{
+			getline(iFile, str1);
+			// Если строка такая, то
+			if (str1.find("Kk,") == 0)
+			{
+				tvs++;
+				tvel = 1;
+				// Начинаем запись в поток
+				// Пока не запишем 331 твэл **
+				do
+				{
+					getline(iFile, str1);
+					// Считали строку
+					// С 4 по 15 символ в другую строку записали
+					short str1Length = str1.length();
+					for (int kl = 4; kl < str1Length; kl++)
+					{
+						s_Full += str1[kl];
+					}
+					// А теперь новую строку с energy release записываем в tmp как double
+					tmp = stod(s_Full);
+					// И присваиваем объекту значение
+					// Потом очищаем строки, переходим к следующему твэлу
+					// Записываем в поток
+					kk_additional_values[tvs][tvel] = tmp;
+					s_Full.clear();
+					str1.clear();
+					tvel++;
+				} while (tvel % (NUM_FR_ + 1) != 0);
+				// **Как только записали 331 твэл ->
+			}
+			// -> Увеличиваем k на единицу (это номер момента времени)
+			if (tvel > (NUM_FA_ - 1)*NUM_FR_)
+			{
+				tvs = 0;
+				tvel = 0;
+				printf("Time point %i\n", tvs);
+			}
+		}
+	}
+	else 
+		throw std::invalid_argument("Check - <D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Result_<state>_MCU_Kk.out>");
+
+	iFile.close();
+
+
+	iFile.open("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Result_Perturbation_MCU_Kk.out");
+	if (iFile.is_open()) {
+		std::string str1, s_Full;
+		short tvs = 0;
+		short num = 0;
+		double tmp;
+		int tvel = 0;
+		while (!iFile.eof())
+		{
+			getline(iFile, str1);
+			// Если строка такая, то
+			if (str1.find("Kk,") == 0)
+			{
+				tvs++;
+				tvel = 1;
+				// Начинаем запись в поток
+				// Пока не запишем 331 твэл **
+				do
+				{
+					getline(iFile, str1);
+					// Считали строку
+					// С 4 по 15 символ в другую строку записали
+					short str1Length = str1.length();
+					for (int kl = 4; kl < str1Length; kl++)
+					{
+						s_Full += str1[kl];
+					}
+					// А теперь новую строку с energy release записываем в tmp как double
+					tmp = stod(s_Full);
+					// И присваиваем объекту значение
+					// Потом очищаем строки, переходим к следующему твэлу
+					// Записываем в поток
+					kk_perturbance_value[tvs][tvel] = tmp;
+					s_Full.clear();
+					str1.clear();
+					tvel++;
+				} while (tvel % (NUM_FR_ + 1) != 0);
+				// **Как только записали 331 твэл ->
+			}
+			// -> Увеличиваем k на единицу (это номер момента времени)
+			if (tvel > (NUM_FA_ - 1)*NUM_FR_)
+			{
+				tvs = 0;
+				tvel = 0;
+				printf("Time point %i\n", tvs);
+			}
+		}
+	}
+	else
+		throw std::invalid_argument("Check - <D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Result_<state>_MCU_Kk.out>");
+
+	iFile.close();
+}
 
 void KK_values::DeviationsCalculatings()
 {
@@ -199,6 +315,34 @@ void KK_values::DeviationsCalculatings()
 	}
 }
 
+void KK_values::AdditionalDeviations()
+{
+	for (short tvs = 1; tvs < NUM_FA_ + 1; tvs++)
+	{
+		for (short tvel = 1; tvel < NUM_FR_ + 1; tvel++)
+		{
+			additional_deviations[tvs][tvel] = (
+				(kk_additional_values[tvs][tvel] != 0) ?
+				((100 * (kk_perturbance_value[tvs][tvel] - kk_additional_values[tvs][tvel]) / kk_additional_values[tvs][tvel])) : 0);
+		}
+	}
+
+}
+
+void KK_values::BarChart()
+{
+	std::ofstream OFile("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/BC.txt", std::ios::app);
+	for (int tvs = 1; tvs < NUM_FA_ + 1; tvs++)
+	{
+		for (int tvel = 1; tvel < NUM_FR_ + 1; tvel++)
+		{
+			double result = additional_deviations[tvs][tvel] - kk_dev[tvs][tvel];
+			OFile << result << std::endl;
+		}
+	}
+
+	OFile.close();
+}
 
 
 
@@ -212,8 +356,11 @@ void kk_calculating()
 	TVS.LoadingScheme();
 	TVS.LoadingMCU("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Kk_MCU.out");
 	TVS.ReadingPermakFile("D:/Vasiliev/PERMAK-A/XIPI_18L_W/ROSTOV/B02/K01/erfr");
-	TVS.DeviationsCalculatings();
+	TVS.GetPerturbatedValues();
 
+	TVS.DeviationsCalculatings();
+	TVS.AdditionalDeviations();
+	TVS.BarChart();
 
 	int z1, z2;
 	int x, y;
@@ -283,6 +430,10 @@ double KK_Return_Values(short max, short tvs, short tvel)
 		return TVS.core_max_dev;
 	case _e_min_dev_core:
 		return TVS.core_min_dev;
+	case _e_kk_perturbance_value:
+		return TVS.kk_perturbance_value[tvs][tvel];
+	case _e_kk_additional_value:
+		return TVS.additional_deviations[tvs][tvel];
 	default:
 		return -9160820148;
 	}

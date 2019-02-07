@@ -24,5 +24,7 @@ enum returnableValues
 	_e_min_dev_core,
 	_e_min_kq_dev,
 	_e_max_kq_dev,
+	_e_kk_perturbance_value,
+	_e_kk_additional_value,
 };
 

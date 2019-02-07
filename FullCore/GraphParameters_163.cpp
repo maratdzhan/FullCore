@@ -227,23 +227,24 @@ void TVS_Solo_TextOutCore(HDC hdc, short tvs, short tvel)
 	// первое обращение -> tvs==1;
 	std::string str[4];
 	HFONT newFont, oldFont;
-	short textSize = stoi(GraphParameters_163Return("TEXT_SIZE"))/2;
+	short textSize = stoi(GraphParameters_163Return("TEXT_SIZE")) / 2;
 	std::string str1;
-
 	str[0] = std::to_string(tvel);
-	str[1] = std::to_string(KK_Return_Values(0, tvs, tvel));
-	str[2] = std::to_string(KK_Return_Values(2, tvs, tvel));
+	str[1] = std::to_string(KK_Return_Values(_e_kk_mcu_current, tvs, tvel));
+	str[3] = std::to_string(KK_Return_Values(_e_kk_additional_value, tvs, tvel));
+	double vv = KK_Return_Values(_e_kk_additional_value, tvs, tvel);
+	str[2] = std::to_string(KK_Return_Values(_e_kk_dev_current, tvs, tvel));
 
 	// Вывод текста
 	int tvelStringsNumber = (stoi(parameters["STRINGS_COUNT"]));
-	for (short i = 0; i <tvelStringsNumber; i++)
+	for (short i = 0; i < tvelStringsNumber; i++)
 	{
 		// Черный цвет текста
 		SetTextColor(hdc, 0);
 		// Прозрачный фон
 		SetBkMode(hdc, TRANSPARENT);
 		// Создаем новый шрифт:
-		newFont = CreateFont(textSize, 0, 0, 0, 0, 0, 0, 0,
+		newFont = CreateFont(textSize, 0, 0, 0, 700, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 			PROOF_QUALITY, DEFAULT_PITCH | FF_DONTCARE, _T("Fixed"));
 
@@ -260,7 +261,7 @@ void TVS_Solo_TextOutCore(HDC hdc, short tvs, short tvel)
 			str1 = str[i];
 
 		TextOut(hdc, (int)(-1 * (1 + ((textSize * 2 - scale) / (scale * scale)))*((str1.size()))),
-			(int)((1 + (1 / scale))*text_coords[i]/3), str1.data(), str1.size());
+			(int)((1 + (1 / scale))*text_coords[i] / 3), str1.data(), str1.size());
 		SelectObject(hdc, oldFont);
 		DeleteObject(newFont);
 		str1.clear();
@@ -490,7 +491,8 @@ void DisplayGapsSize(HDC hdc, short x, short y, short tvs_num)
 	HFONT newFont, currentFont;
 	short GEOM = stoi(GraphParameters_163Return("GEOMETRY"));
 	short text_size = (int)((stoi(GraphParameters_163Return("TEXT_SIZE"))));
-	short an_m = 60, angle = 150;	unsigned short textLenght = 2+stoi(parameters["TEXT_LENGHT"]);
+	short an_m = 60, angle = 150;	
+	unsigned short textLenght = 2+stoi(parameters["TEXT_LENGHT"]);
 	std::string str,str1;
 	double coord_modifier[6][2] = { 
 	{-1.4, 0.7, },	//+++

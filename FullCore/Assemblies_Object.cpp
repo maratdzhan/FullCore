@@ -9,7 +9,7 @@
 
 const short GEOM = 6;
 const short NUMBER_OF_FA=163;
-const double H_ASS = 234.6;
+const double H_ASS = 236;
 double R_CORE = 4.5;
 double c_x[6] = { 1,0.5,-0.5,-1,-0.5,0.5 };
 double s_x[6] = { 0,-0.8660254,-0.8660254,0,0.8660254,0.8660254, };
