@@ -29,6 +29,16 @@ public:
 	double global_min_p=1000, global_min_m=1000;
 	double core_max_dev, core_min_dev;
 
+	std::vector<double> permak_kq;
+	std::vector<double> mcu_kq;
+
+	/////////////////////////////////////////
+	double mcu_kr_val[NUM_FA_ + 1][NUM_FR_ + 1];
+	double permak_kr_val[NUM_FA_ + 1][NUM_FR_ + 1];
+	double perturbance_kr_val[NUM_FA_ + 1][NUM_FR_ + 1];
+	double deviations_kr_val[NUM_FA_ + 1][NUM_FR_ + 1];
+
+
 	void ReadingPermakFile(std::string path);
 	void LoadingScheme();
 	void LoadingMCU(std::string pathway);
@@ -36,6 +46,23 @@ public:
 	void AdditionalDeviations();
 	void GetPerturbatedValues();
 	void BarChart();
+
+	void GetKq()
+	{
+		permak_kq = GetPermakKq();
+		mcu_kq = GetMcuKq();
+	}
+
+	void GetKR()
+	{
+		for (int tvs = 1; tvs < NUM_FA_ + 1; tvs++)
+		{
+			for (int tvel = 1; tvel < NUM_FR_ + 1; tvel++) {
+				mcu_kr_val[tvs][tvel] = mcu_kq[tvs - 1] * kk_values_m[tvs][tvel];
+				permak_kr_val[tvs][tvel] = permak_kq[tvs - 1] * kk_values_p[tvs][tvel];
+			}
+		}
+	}
 };
 
 KK_values TVS;
@@ -360,6 +387,8 @@ void kk_calculating()
 
 	TVS.DeviationsCalculatings();
 	TVS.AdditionalDeviations();
+	TVS.GetKq();
+	TVS.GetKR();
 	TVS.BarChart();
 
 	int z1, z2;

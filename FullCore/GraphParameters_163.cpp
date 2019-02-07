@@ -47,6 +47,10 @@ void McukqRes_TEMPORARY()
 	inputfile.close();
 }
 
+std::vector<double> GetMcuKq()
+{
+	return mcu_kq;
+}
 
 ////////////////////////////////////////////////
 std::map<std::string, std::string> parameters;

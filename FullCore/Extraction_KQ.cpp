@@ -13,6 +13,12 @@ void Writting_kq_permak();
 
 std::vector<double> kq_permak;
 
+std::vector<double> GetPermakKq() {
+	return kq_permak;
+}
+
+
+
 void Extracting_KQ()
 {
 	bool reflector = true;
