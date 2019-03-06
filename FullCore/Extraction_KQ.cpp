@@ -122,9 +122,8 @@ void R_String_Processor(std::string input)
 
 void Writting_kq_permak()
 {
-
-	std::ofstream FA_R("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/permak_res.txt");
 	std::vector<double> result(kq_permak.size());
+	std::ofstream FA_R("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/permak_res.txt");
 
 	int numBlock[163] = {
 		158,159,160,161,162,163,149,150,151,152,153,154,155,156,157,139,
@@ -144,7 +143,8 @@ void Writting_kq_permak()
 	{
 		result[numBlock[i]-1]=kq_permak[i];
 	}
-
+	
+	kq_permak = result;
 
 	for (auto i : result)
 	{
@@ -152,5 +152,4 @@ void Writting_kq_permak()
 	}
 
 	FA_R.close();
-	result.clear();
 }

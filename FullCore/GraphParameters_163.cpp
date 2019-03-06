@@ -199,7 +199,7 @@ void TVS_TextOutCore(HDC hdc, short tvs)
 		// Прозрачный фон
 		SetBkMode(hdc, TRANSPARENT);
 		// Создаем новый шрифт:
-		newFont = CreateFont(textSize, 0, 0, 0, 0, 0, 0, 0, 
+		newFont = CreateFont(textSize, 0, 0, 0, 700, 0, 0, 0, 
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, 
 			PROOF_QUALITY, DEFAULT_PITCH | FF_DONTCARE, _T("Arial"));
 
@@ -249,7 +249,7 @@ void TVS_Solo_TextOutCore(HDC hdc, short tvs, short tvel)
 		// Создаем новый шрифт:
 		newFont = CreateFont(textSize, 0, 0, 0, 700, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-			PROOF_QUALITY, DEFAULT_PITCH | FF_DONTCARE, _T("Fixed"));
+			PROOF_QUALITY, DEFAULT_PITCH | FF_DONTCARE, _T("Arial"));
 
 		// Переприсваивание
 		oldFont = (HFONT)SelectObject(hdc, newFont);
