@@ -247,7 +247,7 @@ void TVS_Solo_TextOutCore(HDC hdc, short tvs, short tvel)
 		// Прозрачный фон
 		SetBkMode(hdc, TRANSPARENT);
 		// Создаем новый шрифт:
-		newFont = CreateFont(textSize, 0, 0, 0, 700, 0, 0, 0,
+		newFont = CreateFont(1.5*textSize, 0, 0, 0, 700, 0, 0, 0,
 			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 			PROOF_QUALITY, DEFAULT_PITCH | FF_DONTCARE, _T("Arial"));
 

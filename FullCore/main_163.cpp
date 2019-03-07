@@ -67,11 +67,11 @@ int main()
 		RegisterGraph_163Class();
 
 		
-		//HGraph_163 = CreateWindow(WinClassGraphName_163, _T("Картограмма зоны"),
-		//	WS_SYSMENU | WS_POPUP | WS_VISIBLE | WS_THICKFRAME | WS_CAPTION,
-		//	sx / 6, sy / 10, sx, sy, HWnd_163Parent, 0, hInst_ChildProcGraph_163, NULL);
-		//UpdateWindow(HGraph_163);
-		//DestroyWindow(HGraph_163);
+		HGraph_163 = CreateWindow(WinClassGraphName_163, _T("Картограмма зоны"),
+			WS_SYSMENU | WS_POPUP | WS_VISIBLE | WS_THICKFRAME | WS_CAPTION,
+			sx / 6, sy / 10, sx, sy, HWnd_163Parent, 0, hInst_ChildProcGraph_163, NULL);
+		UpdateWindow(HGraph_163);
+		DestroyWindow(HGraph_163);
 
 		
 		if (stoi(GraphParameters_163Return("DETAILED")))
