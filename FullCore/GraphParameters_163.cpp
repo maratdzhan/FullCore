@@ -216,7 +216,7 @@ void TVS_TextOutCore(HDC hdc, short tvs)
 			str1 = str[i];
 		
 		TextOut(hdc, (int)(-1* (1 + ((textSize*2-scale)/(scale * scale)))*((str1.size()))), 
-			(int)((1 + (1 / scale))*text_coords[i]), str1.data(), str1.size());
+			(int)((0.5 + (1 / scale))*text_coords[i]), str1.data(), str1.size());
 		SelectObject(hdc, oldFont);
 		DeleteObject(newFont);
 		str1.clear();
@@ -263,8 +263,8 @@ void TVS_Solo_TextOutCore(HDC hdc, short tvs, short tvel)
 		else
 			str1 = str[i];
 
-		TextOut(hdc, (int)(-1 * (1 + ((textSize * 2 - scale) / (scale * scale)))*((str1.size()))),
-			(int)((1 + (1 / scale))*text_coords[i] / 3), str1.data(), str1.size());
+		TextOut(hdc, (int)(-1.2 * (1 + ((textSize * 2 - scale) / (scale * scale)))*((str1.size()))),
+			(int)((1.2 + (1 / scale))*text_coords[i] / 3), str1.data(), str1.size());
 		SelectObject(hdc, oldFont);
 		DeleteObject(newFont);
 		str1.clear();
