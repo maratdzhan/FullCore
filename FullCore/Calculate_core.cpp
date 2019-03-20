@@ -23,8 +23,6 @@ void Initializing()
 }
 
 
-
-
 void fCore_Main(bool withMCs)
 {
 	std::string s="-1";

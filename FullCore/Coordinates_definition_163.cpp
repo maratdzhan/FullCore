@@ -7,7 +7,7 @@
 
 TCHAR current_library_path[80] = "C:/Users/stu1/source/repos/FullCore/FullCore/";
 // const double tvs_size = 234.6; //tutnov
-const double tvs_size = 236; 
+ const double tvs_size = 236; // Nominal
 
 double ReturnCoordinatesTvs(short tvs, bool x)
 {

@@ -72,8 +72,8 @@ public:
 		for (int tvs = 1; tvs < NUM_FA_ + 1; tvs++)
 		{
 			for (int tvel = 1; tvel < NUM_FR_ + 1; tvel++) {
-				p_kr << mcu_kr_val[tvs][tvel] <<std::endl;
-				m_kr << permak_kr_val[tvs][tvel] << std::endl;
+				p_kr << permak_kr_val[tvs][tvel] << std::endl;
+				m_kr << mcu_kr_val[tvs][tvel] << std::endl;
 				if ((tvel >= 218) && (tvel <= 331))
 					WriteKrMy_FirstSecondRow(mcu_kr_val[tvs][tvel], permak_kr_val[tvs][tvel], tvs, tvel);
 			}
@@ -406,19 +406,23 @@ void kk_calculating()
 	_chdir("D:/Vasiliev/PERMAK-A/XIPI_18L_W/");
 
 	system("READSQLITE.exe");
+	try {
+		TVS.LoadingScheme();
+		TVS.LoadingMCU("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Kk_MCU.out");
+		TVS.ReadingPermakFile("D:/Vasiliev/PERMAK-A/XIPI_18L_W/ROSTOV/B02/K01/erfr");
+		TVS.GetPerturbatedValues();
 
-	TVS.LoadingScheme();
-	TVS.LoadingMCU("D:/Vasiliev/PERMAK-A/Local_new/bin/res/crc/Kk_MCU.out");
-	TVS.ReadingPermakFile("D:/Vasiliev/PERMAK-A/XIPI_18L_W/ROSTOV/B02/K01/erfr");
-	TVS.GetPerturbatedValues();
-
-	TVS.DeviationsCalculatings();
-	TVS.AdditionalDeviations();
-	TVS.GetKq();
-	TVS.GetKR();
-	TVS.WriteKr();
-	TVS.BarChart();
-
+		TVS.DeviationsCalculatings();
+		TVS.AdditionalDeviations();
+		TVS.GetKq();
+		TVS.GetKR();
+		TVS.WriteKr();
+		TVS.BarChart();
+	}
+	catch (std::exception & ex) {
+		MessageBox(NULL, ex.what(), "ERROR", MB_OK);
+		exit(1);
+	}
 	int z1, z2;
 	int x, y;
 	short sx = 600;
