@@ -1,8 +1,4 @@
-#include "Coordinates_Definition.h"
-
-#include <Windows.h>
-#include <tchar.h>
-#include <iostream>
+#include "163CommonHeader.h"
 #include<direct.h>
 
 TCHAR current_library_path[80] = "C:/Users/stu1/source/repos/FullCore/FullCore/";
@@ -19,7 +15,7 @@ double ReturnCoordinatesTvs(short tvs, bool x)
 
 	_chdir(current_library_path);
 
-	hLibrary_163 = LoadLibrary(_T("Coordinates_Definition"));
+	hLibrary_163 = LoadLibrary(("Coordinates_Definition"));
 	double(*pFunction) (double,int, bool);
 
 	if (hLibrary_163)
@@ -51,7 +47,7 @@ double ReturnCoordinatesTvel(short tvel, bool x)
 
 	_chdir(current_library_path);
 
-	hLibrary_331 = LoadLibrary(_T("FR_Coords"));
+	hLibrary_331 = LoadLibrary(("FR_Coords"));
 	double(*pFunctionFR) (bool, int);
 
 	if (hLibrary_331)

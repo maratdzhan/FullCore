@@ -1,9 +1,11 @@
 #pragma once
-#include <string>
+
+#include <typeinfo>
 
 
-int GetParam(std::string s, int num);
-double GetParamD(std::string s, int num);
-std::string GetParamS(std::string s, int num);
+template < typename T >
+void GetParam(T & _value, const std::string & s, const size_t number);
+std::string GetStringParam(const std::string &inputString, size_t number);
 std::string ReturnNumbers(std::string str);
-std::string ToUpperFunct(std::string str);
+void ToUpperFunct(std::string & str);
+void PathPreparing(std::string & assumedPath);

@@ -1,4 +1,3 @@
-#include "Assemblies_Object.h"
 
 double GetCorrection(double cb, double gam, double ro5, double gs)
 {

@@ -1,104 +1,88 @@
-#include "GetParam.h"
-#include <string>
-#include <algorithm>
+#include "163CommonHeader.h"
 
 
-
-int GetParam(std::string s, int num)
+template < typename T >
+void GetParam(T & _value, const std::string & s, const size_t number)
 {
-	std::string resStr;
-	int locNum = 1;
+	std::string resultString;
+	size_t currentNumber = 1;
 
-	for (unsigned int pos = 0; pos < s.size(); pos++)
-	{
-		if (s[pos] != ',')
+	bool breaking = false;
+	try {
+		for (unsigned int pos = 0; pos < s.size(); pos++)
 		{
-			resStr += s[pos];
-		}
-		else
-		{
-			if (num == locNum)
+			if ((s[pos] != ',') && (currentNumber == number)&&(s[pos]!=32))
 			{
-				locNum = stoi(resStr);
-				return locNum;
+				resultString += s[pos];
 			}
 			else
 			{
-				locNum++;
-				resStr.clear();
+				if (!breaking)
+				{
+					if (currentNumber > number)
+						breaking = true;
+					if (s[pos] == ',')
+						currentNumber++;
+				}
+				else
+					break;
 			}
 		}
+
+		//		assert(!resultString.empty());
+		if (typeid(T) == typeid(int))
+		{
+			_value = stoi(resultString);
+		}
+		else if (typeid(T) == typeid(double))
+		{
+			_value = stod(resultString);
+		}
+	//	else
+	//	{
+			//		_value = resultString;
+	//	}
 	}
-	if (!resStr.empty())
+	catch (std::exception & exc)
 	{
-		locNum = stoi(resStr);
+		std::cerr << exc.what() << std::endl;
 	}
-	return locNum;
 }
 
-double GetParamD(std::string s, int num)
+std::string GetStringParam(const std::string &inputString, size_t number)
 {
-	std::string resStr;
-	int counter = 1;
-	double locNum = -899;
+	std::string resultString;
+	size_t currentNumber = 1;
 
-	for (unsigned int pos = 0; pos < s.size(); pos++)
-	{
-		if (s[pos] != ',')
+	bool breaking = false;
+	try {
+		for (unsigned int pos = 0; pos < inputString.size(); pos++)
 		{
-			resStr += s[pos];
-		}
-		else
-		{
-			if (num == counter)
+			if ((inputString[pos] != ',') && (currentNumber == number))
 			{
-				locNum = stod(resStr);
-				return locNum;
+				resultString += inputString[pos];
 			}
 			else
 			{
-				counter++;
-				resStr.clear();
+				if (!breaking)
+				{
+					if (currentNumber > number)
+						breaking = true;
+					if (inputString[pos] == ',')
+						currentNumber++;
+				}
+				else
+					break;
 			}
 		}
-	}
-	if (!resStr.empty())
-	{
-		locNum = stod(resStr);
-	}
-	return locNum;
-}
 
-std::string GetParamS(std::string s, int num)
-{
-	std::string resStr;
-	int counter = 1;
+		return resultString;
 
-	for (unsigned int pos = 0; pos < s.size(); pos++)
-	{
-		if ((s[pos] != ',')&&(s[pos] != ' '))
-		{
-			resStr += s[pos];
-		}
-		else
-		{
-			if (num == counter)
-			{
-
-				return resStr;
-			}
-			else
-			{
-				counter++;
-				resStr.clear();
-			}
-		}
 	}
-	if (!resStr.empty())
+	catch (std::exception & exc)
 	{
-		resStr;
+		std::cerr << exc.what() << std::endl;
 	}
-	return resStr;
 }
 
 std::string ReturnNumbers(std::string str)
@@ -128,9 +112,16 @@ std::string ReturnNumbers(std::string str)
 	return result;
 }
 
-std::string ToUpperFunct(std::string str)
+void ToUpperFunct(std::string & str)
 {
 	std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+}
 
-	return str;
+void PathPreparing(std::string & assumedPath)
+{
+	for (size_t i = 0; i < assumedPath.length(); ++i)
+	{
+		if (char(assumedPath[i]) == '\\')
+			assumedPath[i] = '/';
+	}
 }
