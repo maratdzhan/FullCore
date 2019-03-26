@@ -22,7 +22,7 @@ double ReturnCoordinatesTvs(short tvs, bool x)
 	{
 		(FARPROC &) pFunction = GetProcAddress(hLibrary_163, "cdefine");
 		if (pFunction == NULL)
-			std::cout << "NOT FIND cdefine at Coordinates_definition at ''ReturnCoordinates function\n";
+			std::cerr << "NOT FIND cdefine at Coordinates_definition at ''ReturnCoordinates function\n";
 		else
 		{
 			if (x)
@@ -33,7 +33,7 @@ double ReturnCoordinatesTvs(short tvs, bool x)
 	}
 	else
 	{
-		std::cout << "ERROR OPENING LIBRARY => COORDINATES_DEFINITION.dll\n";
+		std::cerr << "ERROR OPENING LIBRARY => COORDINATES_DEFINITION.dll\n";
 	}
 }
 
@@ -54,7 +54,7 @@ double ReturnCoordinatesTvel(short tvel, bool x)
 	{
 		(FARPROC &)pFunctionFR = GetProcAddress(hLibrary_331, "RetFrCoord");
 		if (pFunctionFR == NULL)
-			std::cout << "NOT FIND cdefine at Coordinates_definition at ''ReturnCoordinates function\n";
+			std::cerr << "NOT FIND cdefine at Coordinates_definition at ''ReturnCoordinates function\n";
 		else
 		{
 			if (x)
@@ -65,7 +65,7 @@ double ReturnCoordinatesTvel(short tvel, bool x)
 	}
 	else
 	{
-		std::cout << "ERROR OPENING LIBRARY => COORDINATES_DEFINITION.dll\n";
+		std::cerr << "ERROR OPENING LIBRARY => COORDINATES_DEFINITION.dll\n";
 	}
 }
 
@@ -248,7 +248,7 @@ int Neig_Array(int fa_num, int edge)
 	{
 		return (neib);
 	}
-	std::cout << "ERROR FIND NEIGHBOR FOR TVS " << fa_num << " EDGE " << edge << std::endl;
+	std::cerr << "ERROR FIND NEIGHBOR FOR TVS " << fa_num << " EDGE " << edge << std::endl;
 }
 
 

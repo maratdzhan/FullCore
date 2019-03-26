@@ -60,7 +60,8 @@ std::string GetStringParam(const std::string &inputString, size_t number)
 		{
 			if ((inputString[pos] != ',') && (currentNumber == number))
 			{
-				resultString += inputString[pos];
+				if (inputString[pos] != ' ')
+					resultString += inputString[pos];
 			}
 			else
 			{
@@ -90,7 +91,7 @@ std::string ReturnNumbers(std::string str)
 	std::string result;
 	if (!str.empty())
 	{
-		for (short i = 0; i < str.size(); i++)
+		for (size_t i = 0; i < str.size(); i++)
 		{
 			if (((char(str[i]) > 47) && (char(str[i]) < 58)) || (char(str[i] == 44)) || (char(str[i] == 46)) || (char(str[i]) == 45))
 			{

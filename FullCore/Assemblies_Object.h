@@ -1,4 +1,5 @@
 #pragma once
+//#include "163CommonHeader.h"
 //#define _USE_MATH_DEFINES
 //#include <string>
 //
@@ -35,3 +36,4 @@
 //void kk_calculating();
 //double KK_Return_Values(short max, short tvs, short tvel);
 //
+
