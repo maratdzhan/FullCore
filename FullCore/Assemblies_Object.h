@@ -36,4 +36,3 @@
 //void kk_calculating();
 //double KK_Return_Values(short max, short tvs, short tvel);
 //
-

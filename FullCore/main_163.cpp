@@ -4,26 +4,15 @@
 
 int main()
 {
-	CommonParametersHandler handle;
+  	CommonParametersHandler handle;
 
-	try {
 		// Get states list
-		//Start calculating
-		for (const auto & content : handle.FilesList())
-		{
-			try {
-				Core CurrentLoad(content);
-			}
-			catch (std::exception & catching)
-			{
-				std::cerr << catching.what() << std::endl;
-			}
-		}
-	}
-	catch (std::exception & ex_main)
+		// Start calculating
+	for (const auto & content : handle.FilesList())
 	{
-		std::cerr << ex_main.what() << std::endl;
+		Core CurrentLoad(content);
 	}
+
 
  	return 0;
 }
