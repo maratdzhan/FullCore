@@ -1,5 +1,5 @@
 
-double GetCorrection(double cb, double gam, double ro5, double gs)
+double SetCorrection(double cb, double gam, double ro5, double gs)
 {
 	double modifier = 0;
 

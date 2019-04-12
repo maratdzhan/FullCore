@@ -4,15 +4,18 @@
 
 int main()
 {
-  	CommonParametersHandler handle;
+   	CommonParametersHandler handle;
 
 		// Get states list
 		// Start calculating
 	for (const auto & content : handle.FilesList())
 	{
 		Core CurrentLoad(content);
+		CurrentLoad.LoadingAssembly();
 	}
 
 
+	// Last were 300 ms;
  	return 0;
 }
+ 

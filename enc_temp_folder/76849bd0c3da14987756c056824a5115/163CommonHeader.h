@@ -437,9 +437,12 @@ std::cerr << tvs.GetTvsNumber()+1 << ". ";
 	for (size_t side = 0; side < geometry; side++)
 	{
 		_result = -999;
+std::cerr << " Side " << side << " ";
 		double _first = tvs.GetGapSize(side);
 		double _second = tvs.GetGapSize((side - 1 + 6) % geometry);
+std::cerr << " + side " << (side - 1 + 6) % geometry<< " ";
 		double _third = -999;
+std::cerr << " + side " << (side + 1 + geometry / 2) % geometry << " from tvs " << tvs.GetNeig(side) << " ";
 		if (tvs.GetNeig(side) != -1)
 		{
 			_third = _fuelAssemblies[tvs.GetNeig(side)-1].GetGapSize((side + 1 + geometry/2) % geometry);
@@ -451,9 +454,9 @@ std::cerr << tvs.GetTvsNumber()+1 << ". ";
 		std::pair < size_t, double > t = Rounding(_result);
 		tvs.SetCornerConstants(side, _gapSizeCornerConstant[t.first]);
 		tvs.SetCornerGapSize(side, t.second);
-		std::cerr << _gapSizeCornerConstant[t.first] << " ";
+std::cerr << _gapSizeCornerConstant[t.first] << "\n";
 	}
-	std::cerr << std::endl;
+std::cerr << std::endl;
 }
 
 void SetGapsForTvs(Assembly &tvs)

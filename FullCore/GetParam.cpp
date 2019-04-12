@@ -1,5 +1,4 @@
-#include "163CommonHeader.h"
-
+#include "GetParam.h"
 
 //template < typename T >
 //T GetParam(const T _value, const std::string & s, const size_t number)
