@@ -68,9 +68,6 @@
     <ClInclude Include="Coordinates_Definition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Assemblies_Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Extraction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,6 +75,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GetParam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HashTables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Permapar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Loading test parameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Assemblies_Class.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ASsemblies_Calculations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

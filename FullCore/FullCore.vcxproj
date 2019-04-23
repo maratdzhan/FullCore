@@ -133,12 +133,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="163CommonHeader.h" />
-    <ClInclude Include="Assemblies_Object.h" />
+    <ClInclude Include="ASsemblies_Calculations.h" />
+    <ClInclude Include="Assemblies_Class.h" />
     <ClInclude Include="Coordinates_Definition.h" />
     <ClInclude Include="Extraction.h" />
     <ClInclude Include="GetParam.h" />
     <ClInclude Include="GraphParameters_163.h" />
+    <ClInclude Include="HashTables.h" />
     <ClInclude Include="kk_calculating.h" />
+    <ClInclude Include="Loading test parameters.h" />
+    <ClInclude Include="Permapar.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

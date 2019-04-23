@@ -3,14 +3,16 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 
 std::string GetStringParam(const std::string &inputString, size_t number);
 std::string ReturnNumbers(std::string str);
 void ToUpperFunct(std::string & str);
-void PathPreparing(std::string & assumedPath);
+void PathPreparing(std::string & assumedPath, int _type_of_replacer);
 void SymbolsDeleting(std::string & inputString);
 double SetCorrection(double cb, double gam, double ro5, double gs);
+void FromStringVectorToString(std::string & _outputString, std::vector<std::string> inputVector, char _separator, int start_pos, int end_pos);
 
 template < typename T >
 void GetParam(T & _value, const std::string & s, const size_t number)
@@ -48,4 +50,17 @@ void GetParam(T & _value, const std::string & s, const size_t number)
 	{
 		std::cerr << exc.what() << std::endl;
 	}
+}
+
+template<typename K>
+void FromNumericalVectorToString(std::string & _ai, std::vector<K> mapk, char _separator, int start_pos, int end_pos)
+{
+	if (end_pos == -1)
+		end_pos = mapk.size();
+
+	for (int i = start_pos; i < end_pos; i++) {
+		_ai += (std::to_string(mapk[i]));
+		_ai += _separator;
+	}
+
 }

@@ -2,6 +2,8 @@
 
 #define _USE_MATH_DEFINES
 
+ #define _USING_HASH_TABLE 1;
+
 #include <math.h>
 #include <Windows.h>
 #include <vector>
@@ -17,13 +19,16 @@
 
 
 
+
 using VS=std::vector<std::string>;
 
 #include "GetParam.h"
 
 #include "Coordinates_Definition.h"
 
-#include "Assemblies_Object.h"
+#include "Assemblies_Class.h"
+
+#include "HashTables.h"
 
 
 enum parametersName
@@ -37,7 +42,11 @@ enum parametersName
 	library,
 	coord_library,
 	reflector_distance,
-	nominal_gap_state,
+	nominal_gap_size,
+	p_workdir,
+	project,
+	unit,
+	fuel_cycle,
 };
 
 struct FileHandler
@@ -96,14 +105,25 @@ public:
 			if (temporary == "REFLECTOR_DISTANCE")
 				return reflector_distance;
 			if (temporary == "NOMINAL_GAP_SIZE")
-				return nominal_gap_state;
+				return nominal_gap_size;
+			if (temporary == "PWORKDIR")
+				return p_workdir;
+			if (temporary == "PROJECT")
+				return project;
+			if (temporary == "UNIT")
+				return unit;
+			if (temporary == "FUEL_CYCLE")
+				return fuel_cycle;
 
+			
 			throw std::invalid_argument("unknown argument " + _parameterName);
+			return unknown;
 		}
 		catch (std::invalid_argument & ia_p)
 		{
 			std::cerr << ia_p.what() << " at " << __FUNCTION__ << std::endl;
 		}
+		return unknown;
 	}
 
 private:
@@ -203,17 +223,21 @@ private:
 	std::map<std::string, std::string> m_filesListMap;
 };
 
-
 class CommonParametersHandler
 {
 public:
 	CommonParametersHandler() {
 
 		mainParameters = "gap.par";
+		// Generating path system;
 		InnerStructInitialize();
-		FileListInitialize(); // Initializing list for files checking
+		// Initializing list for files checking
+		FileListInitialize(); 
+		// Get parameters from gap.par
 		GetParametersList();
+		// Extracting tests from test list
 		GetTestsName();
+		// Check files in i-test folder
 		FilesListCheck();
 
 	}
@@ -241,7 +265,7 @@ public:
 			if (counter != fileList.size()-1)
 			{
 				std::cerr << "calculation cant be prepared: "
-					<<m_relativeFileList[j].GetTestName()<<" not inizialized\n";
+					<<m_relativeFileList[j].GetTestName()<<" not inizialized. Reason:\nWrong input file's count\n";
 			}
 			else
 				m_relativeFileList[j].SetInitializing();
@@ -258,6 +282,7 @@ public:
 		fileList.push_back("PARAMETERS.LOAD");
 		fileList.push_back("PERMAPAR_INPUT.DAT");
 		fileList.push_back("CONST.DAT");
+		fileList.push_back("BASEMENT.NAR");
 	}
 
 	std::vector<Calculation> FilesList() const
@@ -355,542 +380,141 @@ private:
 class Core
 {
 public:
-Core(const Calculation & _currentObject)
-{
-	try {
-		if (_currentObject.IsCalculationInitialized()) {
-			isModifierAccounted = true;
-			maxGapVal = 0;
-			minGapVal = 0;
-			stepGapValue = reflectorDistance = 0;
-			geometry = 6;
-			isInitialized = _currentObject.IsCalculationInitialized();
-			_fa_count = _tvel_count = _tveg_count = _node_count = 0;
-			_tvs_size = _tvs_step = _coordinate_system = 0;
-			nominalGapSize = 0;
-			std::cout << "Handling begin:"
-				<< _currentObject.GetTestName() << std::endl;
-			m_Compilation = { _currentObject.List() };
-			m_Compilation.SetFilesNames(_currentObject.GetFilesNames());
-			m_Compilation.SetTestName(_currentObject.GetTestName());
-			m_Compilation.SetInitializing();
-			FileReading();
-		}
-
-	}
-	catch (std::exception & Core_constructor_exception)
-	{
-		std::cerr << Core_constructor_exception.what();
-	}
-}
-
-void LoadingAssembly()
-{
-	if (isInitialized) {
-			_fuelAssemblies.resize(_fa_count);
-			double x = 0;
-			double y = 0;
-			fa_library_file = _c_library + "Coordinates_Definition.dll";
-			m_coreCoordinates.AddLibrary(fa_library_file);
-			m_coreCoordinates.SetSize(_fa_count);
-			m_coreCoordinates.GetTvsCoordinates(_tvs_step);
-			m_coreCoordinates.NeigArrayInitializing();
-			std::vector<std::pair<double, double>> coordinates = m_coreCoordinates.V_ReturnCoordinatesTvs();
-			// Ключ для данных тутнова;
-
-			for (size_t i = 0; i < _fa_count; ++i)
-			{
-				x = coordinates[i].first;
-				y = coordinates[i].second;
-				_fuelAssemblies[i].Initialize(_tvs_size, _tvs_step, i);
-				_fuelAssemblies[i].SetProjectCoordinates(x, y);
-				// here we must send coordinates and type of shift
-				_fuelAssemblies[i].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i]);
-			}
-
-			std::vector<int> neigs(geometry);
-
-			for (auto & assembly : _fuelAssemblies)
-			{
-				assembly.SetNeigs(m_coreCoordinates.Neig_Array(assembly.GetNumber()));
-				//придумай как реализовать
-				SetGapsForTvs(assembly);
-				//assembly.SetEffectiveGaps();
-			}
-			
-			for (auto &assembly : _fuelAssemblies)
-			{
-				SetCornerGapsForTvs(assembly);
-			}
-	}
-}
-
-~Core()
-{
-
-}
-
-void SetCornerGapsForTvs(Assembly &tvs)
-{
-	double _result = 0;
-std::cerr << tvs.GetTvsNumber()+1 << ". ";
-	for (size_t side = 0; side < geometry; side++)
-	{
-		_result = -999;
-		double _first = tvs.GetGapSize(side);
-		double _second = tvs.GetGapSize((side - 1 + 6) % geometry);
-		double _third = -999;
-		if (tvs.GetNeig(side) != -1)
-		{
-			_third = _fuelAssemblies[tvs.GetNeig(side)-1].GetGapSize((side + 1 + geometry/2) % geometry);
-		}
-		else
-			_third = reflectorDistance-nominalGapSize;
-
-		_result = (_first + _second + _third) / 3.;
-		std::pair < size_t, double > t = Rounding(_result);
-		tvs.SetCornerConstants(side, _gapSizeCornerConstant[t.first]);
-		tvs.SetCornerGapSize(side, t.second);
-		std::cerr << _gapSizeCornerConstant[t.first] << " ";
-	}
-	std::cerr << std::endl;
-}
-
-void SetGapsForTvs(Assembly &tvs)
-{
-	double _x = 0;
-	double _y = 0;
-	int _neig = -1;
-
-	double _gapSize = -999;
-
-std::cerr << tvs.GetTvsNumber() << ". ";
-
-	for (auto side = 0; side < geometry; side++)
+	Core(const Calculation & _currentObject)
 	{
 		try {
-			_gapSize = -999;
-			// Х: Текущее Х центра кассета - (определяем соседа (GetNeig()) и для него получаем текущий Х)
-			_neig = tvs.GetNeig(side);
-			if (_neig > 0) {
-				_neig -= 1;
-				_x = tvs.GetCurrentX() - _fuelAssemblies[_neig].GetCurrentX();
-				_y = tvs.GetCurrentY() - _fuelAssemblies[_neig].GetCurrentY();
-				_gapSize = sqrt(_x*_x + _y * _y) - _tvs_step;
+			if (_currentObject.IsCalculationInitialized()) {
+				// Set inner variables
+				isModifierAccounted = true;
+				maxGapVal = 0;
+				minGapVal = 0;
+				stepGapValue = reflectorDistance = 0;
+				geometry = 6;
+				isInitialized = _currentObject.IsCalculationInitialized();
+				_fa_count = _tvel_count = _tveg_count = _node_count = 0;
+				_tvs_size = _tvs_step = _coordinate_system = 0;
+				fuel_cycle_number = unit_number = 0;
+				nominalGapSize = 0;
+				//  Begin work cycle
+				std::cout << "Handling begin:"
+					<< _currentObject.GetTestName() << std::endl;
+				m_Compilation = { _currentObject.List() };
+				m_Compilation.SetFilesNames(_currentObject.GetFilesNames());
+				m_Compilation.SetTestName(_currentObject.GetTestName());
+				m_Compilation.SetInitializing();
+				FileReading();
+				CreatePermparFile();
 			}
-			else
-			{
-				double angle = M_PI * ((180 - side * 60) % 360) / 180.;
-				double debug_1 = tvs.GetShiftX()*cos(angle);
-				debug_1 = tvs.GetShiftY()*sin(angle);
-				_gapSize = reflectorDistance - tvs.GetShiftX()*cos(angle) - tvs.GetShiftY()*sin(angle) - nominalGapSize;
-			}
-
-			//		if (isModifierAccounted)
-			//			SetCorrection(cb, gam, ro5, gs);
-
-			std::pair < size_t, double > t = Rounding(_gapSize);
-			tvs.SetGapSize(side, t.second);
-			tvs.SetPlaneConstants(side, _gapSizePlaneConstant[t.first]);
-			nal2.insert(_gapSizePlaneConstant[t.first]);
-
-std::cerr << _gapSizePlaneConstant[t.first] << " ";
 
 		}
-		catch (std::exception & e_c)
+		catch (std::exception & Core_constructor_exception)
 		{
-			std::cerr << e_c.what() << " at " << __FUNCTION__ << std::endl;
+			std::cerr << Core_constructor_exception.what();
 		}
-	}           
-std::cerr << std::endl;
-}
-
-private:
-	void FileReading()
-	{
-		ReadingParameters();
-		ReadingMapn(_fa_count);
-		ReadingGaps();
-		ReadingMapkas();
-		ReadingList();
-		ReadingPermpar();
-		ReadingConstants();
-
-		//	if (key)
-		//		ReadingBunrup();
 	}
 
-	std::pair<size_t, double> Rounding(double _gs)
-	{
-		size_t i = 0;
-		size_t j = _gapSize.size();
-		size_t k = 0;
-		int itt = 0;
-
-		while (true)
-		{
-			k = (j + i) / 2;
-			if (_gs >= _gapSize[k])
-			{
-				i = k;
-			}
-			else
-			{
-				j = k;
-			}
-			if (itt > 1000)
-				throw (std::out_of_range("Can't find mathc in ROUNDING()\n"));
-			if ((j - i) == 1)
-				break;
-		}
-		return { j-1,_gapSize[j-1] };
-
-	}
-
+//// Reading test input files
 public:
-	void ReadingParameters()
-	{
-		std::string _path = m_Compilation.GetFileByName("PARAMETERS.LOAD");
-		VS parametersStrings =
-			file.GetLine(_path);
-		if (parametersStrings.empty()) {
-			std::cout << ">>>\n" << __FUNCTION__ << ":" << std::endl;
-			throw(std::invalid_argument("Empty parameters string\n>>>"));
-		}
-		for (const auto & item : parametersStrings)
-		{
-			parametersName _name = file.GetType(GetStringParam(item, 1));
-			switch (_name)
-			{
-			case (tvs_size):
-				GetParam(_tvs_size, item, 2u);
-				break;
-			case (tvs_step):
-				GetParam(_tvs_step, item, 2);
-				break;
-			case (tvel_count):
-				GetParam(_tvel_count, item, 2);
-				break;
-			case (tveg_count):
-				GetParam(_tveg_count, item, 2);
-				break;
-			case (fa_count):
-				GetParam(_fa_count, item, 2);
-				break;
-			case (library):
-				_pp_library = GetStringParam(item, 2);
-				break;
-			case (coord_library):
-				_c_library=GetStringParam(item, 2);
-				break;
-			case (reflector_distance):
-				GetParam(reflectorDistance, item, 2);
-				break;
-			case (nominal_gap_state):
-				GetParam(nominalGapSize, item, 2);
-				break;
-			default:
+	void FileReading();
+	void ReadingParameters();
+	void ReadingMapn(const uint16_t _count);
+	void ReadingGaps();
+	void ReadingMapkas();
+	void ReadingBasement();
+	void ReadingList();
+	void ReadingPermpar();
+	void ReadingConstants();
 
-				break;
-			}
-		}
-	}
+//// Readed files handling
+	void ListHandle(const std::string & inputString);
+	void GapsListParameters(uint8_t _parameter, std::string & _value);
+	void CraftGapsList();
+//// Making permpar file
+	void CreatePermparFile();
+	void PermparMaking();
+	void PermparSP(const std::string & _s);
+	int TouchCase(const std::string & _str) const;
+	void WriteToPermpar();
+	void NalArraysForming();
+	void Nal2Generating();
+	void Nal3Generating();
+	void AssembliesArrayForming();
+	void ConstantsForming();
+	void LibraryIncluding();
+//// Assemblies handler
+	void CycleSetPlaneGapsForTvs();
+	void CycleSetCornerGapsForTvs();
+	void CycleSetNeigsForTvs();
+	void LoadingAssemblies();
+	std::pair<size_t, double> Rounding(double _gs) const;
+	VS CyclingConstantFinding(const VS & _id);
+	int FindTheConstant(const std::string & _id) const;
+	void SetCornerGapsForTvs(Assembly &tvs);
+	void SetGapsForTvs(Assembly &tvs);
 
-	void ReadingMapn(const uint16_t _count)
-	{
-		try {
-			VS mapnString =
-				file.GetLine(m_Compilation.GetFileByName("MAPN.DAT"));
-			if (_count != mapnString.size())
-			{
-				throw (std::out_of_range("Not enought data for mapn"));
-			}
-			else {
-				for (const auto & map : mapnString)
-				{
-					_mapn.push_back(stoi(map));
-				}
-			}
-		}
-		catch (std::exception & mapnExc)
-		{
-			std::cerr << mapnExc.what() << " " << __FUNCTION__ << std::endl;
-
-		}
-	}
-
-	void ReadingGaps()
-	{
-		try {
-			VS gapsString =
-				file.GetLine(m_Compilation.GetFileByName("COORDS.PVM"));
-			ToUpperFunct(gapsString[0]);
-			if (gapsString.size() <= _fa_count) {
-				throw (std::out_of_range("Not enought gaps data\n"));
-			}
-			else
-			{
-				// Define coordinate system
-				if (gapsString[0] == "POLAR")
-				{
-					_coordinate_system = 3;
-				}
-				else if (gapsString[0] == "CARTESIAN")
-				{
-					ToUpperFunct(gapsString[1]);
-					if (gapsString[1] == "ABSOLUTE")
-					{
-						_coordinate_system = 1;
-					}
-					else if (gapsString[1] == "SHIFT")
-					{
-						_coordinate_system = 2;
-					}
-					else
-					{
-						throw (std::invalid_argument("Unknown gaps data type"));
-					}
-					gapsString.erase(gapsString.begin());
-				}
-				else
-				{
-					throw (std::invalid_argument("Unknown coordinate system. Check <COORDS.PVM>\n"));
-				}
-				// Get item values
-				gapsString.erase(gapsString.begin());
-				double f_p = 0, s_p = 0;
-				for (const auto & item : gapsString)
-				{
-					GetParam(f_p, item, 2);
-					GetParam(s_p, item, 3);
-					first_coodinate.push_back(f_p);
-					second_coordinate.push_back(s_p);
-				}
-			}
-		}
-		catch (std::exception & gapsExc)
-		{
-			std::cerr << gapsExc.what() << " " << __FUNCTION__ << std::endl;
-		}
-	}
-
-	void ReadingMapkas()
-	{
-		try {
-			VS mapkasString =
-				file.GetLine(m_Compilation.GetFileByName("MAPKAS.DAT"));
-			if (mapkasString.empty())
-				throw(std::invalid_argument(">>>\nEmpty mapkas list\n>>>\n"));
-			for (const auto & item : mapkasString)
-			{
-				std::string _value;
-				std::vector<int> _currentVector;
-				for (const auto & c : item)
-				{
-					if (char(c) >= 48 && char(c) <= 57)
-					{
-						_value += c;
-					}
-					else
-					{
-						if (!_value.empty() && char(c) != 32)
-						{
-							_currentVector.push_back(stoi(_value));
-							_value.clear();
-						}
-					}
-				}
-				mapkas.push_back(_currentVector);
-			}
-		}
-		catch (std::exception & mapkasExc)
-		{
-			std::cerr << mapkasExc.what() << " " << __FUNCTION__ << std::endl;
-		}
-	}
-
-	void ReadingList()
-	{
-		try
-		{
-			//VS listString =
-			//	file.GetLine(m_Compilation.GetFileByName("LIST.TXT"));
-			//if (listString.empty())
-			//	throw (std::invalid_argument("Empty list file"));
-
-			//_gapSize.resize(listString.size());
-			//_gapSizePlaneConstant.resize(listString.size());
-			//_gapSizeCornerConstant.resize(listString.size());
-			//for (size_t i=0; i< listString.size();++i)
-			//{
-			//	float _size = 0;
-			//	GetParam(_size, listString[i], 1);
-			//	// В этой строке ошибка
-			//	std::string nameSize = std::to_string((int)(_size * 100));
-			//	_gapSize[i]= _size;
-			//	_gapSizePlaneConstant[i]=("P" + nameSize);
-			//	_gapSizeCornerConstant[i]=("C" + nameSize);
-			//}
-			std::ifstream ifs(m_Compilation.GetFileByName("LIST.TXT"));
-			if (!ifs.is_open())
-				throw(std::invalid_argument("File LIST.txt not found\n"));
-			std::string tmp;
-			uint8_t _case = 0;
-			while (!ifs.eof())
-			{
-				getline(ifs, tmp);
-				if (!tmp.empty())
-					ListHandle(tmp);
-			}
-			CraftGapsList();
-		}
-		catch (std::exception & listExc)
-		{
-			std::cerr << listExc.what() << " " << __FUNCTION__ << std::endl;
-		}
-	}
-
-	void ListHandle(const std::string & inputString)
-	{
-		std::string parameter =(GetStringParam(inputString, 1));
-		ToUpperFunct(parameter);
-		std::string _value = GetStringParam(inputString, 2);
-		uint8_t _param = 0;
-		if (parameter.find("MAX")!=-1)
-			_param = 5;
-		if (parameter.find("MIN") != -1)
-			_param = 4;
-		if (parameter.find("STEP") != -1)
-			_param = 3;
-		if (parameter.find("PLANE") != -1)
-			_param = 2;
-		if (parameter.find("CORNER") != -1)
-			_param = 1;
-	
-		GapsListParameters(_param, _value);
-	}
-
-
-	void GapsListParameters(uint8_t _parameter, std::string & _value)
-	{
-		switch (_parameter)
-		{
-		case (5):
-			maxGapVal = stoi(_value);
-			break;
-		case(4):
-			minGapVal = stoi(_value);
-			break;
-		case(3):
-			stepGapValue = stod(_value);
-			break;
-		case(2):
-			planePredictor = _value;
-			break;
-		case(1):
-			cornerPredictor = _value;
-			break;
-		default:
-			std::cerr << "unknown parameter at " << __FUNCTION__ << "\n";
-		}
-	}
-
-	void CraftGapsList()
-	{
-		int multiplier = 1;
-		while (stepGapValue*multiplier < 1)
-		{
-			multiplier *= 10;
-		}
-
-		stepGapValue *= multiplier;
-
-		if (maxGapVal > minGapVal)
-		{
-			double _currentValue = minGapVal*multiplier-stepGapValue;
-			while (_currentValue/multiplier <= maxGapVal)
-			{
-				_currentValue += stepGapValue;
-				_gapSize.push_back(_currentValue/ multiplier);
-				_gapSizePlaneConstant.push_back(planePredictor + std::to_string((int)(_currentValue)));
-				_gapSizeCornerConstant.push_back(cornerPredictor + std::to_string((int)(_currentValue)));
-			}
-		}
-		else
-			std::cerr << "Wrong input parameters :" << __FUNCTION__ << std::endl;
-	}
-
-
-
-	void ReadingPermpar()
-	{
-		try {
-			permpar=
-				file.GetLine(m_Compilation.GetFileByName("PERMAPAR_INPUT.DAT"));
-			if (permpar.empty())
-				throw(std::invalid_argument(">>>\nEmpty permpar_input list\n>>>\n"));
-			// Тут аккуратно: мы считали файл, в котором есть замены типа "KASSET"
-		}
-		catch (std::exception & permparExc)
-		{
-			std::cerr << permparExc.what() << " " << __FUNCTION__ << std::endl;
-
-		}
-	}
-
-	void ReadingConstants()
-	{
-		try {
-			constants =
-				file.GetLine(m_Compilation.GetFileByName("CONST.DAT"));
-			if (constants.empty())
-				throw(std::invalid_argument(">>>\nEmpty constants list\n>>>\n"));
-			// Тут аккуратно: мы считали файл, в котором есть замены типа "KASSET"
-		}
-		catch (std::exception & constExc)
-		{
-			std::cerr << constExc.what() << " " << __FUNCTION__ << std::endl;
-
-		}
-	}
 
 
 
 private:
-		double _tvs_size;
-		double _tvs_step;
-		double nominalGapSize;
-		std::string _pp_library;
-		uint16_t _fa_count;
-		uint16_t _tvel_count;
-		uint16_t _tveg_count;
-		uint16_t _node_count;
-		std::vector<uint16_t> _mapn;
-		uint8_t _coordinate_system;
-		std::vector<double> first_coodinate;
-		std::vector<double> second_coordinate;
-		std::vector<std::vector<int>> mapkas;
-		VS permpar;
-		VS constants;
-		std::vector<double> _gapSize;
-		std::vector<std::string> _gapSizePlaneConstant;
-		std::vector<std::string> _gapSizeCornerConstant;
-		int maxGapVal;
-		int minGapVal;
-		std::string planePredictor, cornerPredictor;
-		double stepGapValue;
-		std::string _c_library;
-		std::string fa_library_file;
-		int geometry;
-		double reflectorDistance;
-		bool isInitialized;
-		bool isModifierAccounted;
-// Classes:
+	double _tvs_size;
+	double _tvs_step;
+	double nominalGapSize;
+	std::string _pp_library;
+	uint16_t _fa_count;
+	uint16_t _tvel_count;
+	uint16_t _tveg_count;
+	uint16_t _node_count;
+	uint8_t _coordinate_system;
+	std::vector<double> first_coodinate;
+	std::vector<double> second_coordinate;
+
+
+	std::string p_workdirectory;
+	std::string p_project_name;
+	uint8_t unit_number;
+	uint8_t fuel_cycle_number;
+
+	// Permpar:
+	VS permpar;
+	VS toPermpar;
+	VS constants;
+	std::string _c_library;
+	std::string permpar_path;
+	std::vector<uint16_t> _mapn;
+	std::vector<std::vector<int>> mapkas;
+	std::set<std::string> nal2;
+	std::set<std::string> nal3;
+	VS nal2array;
+	VS nal3array;
+	VS nal2_r_array;
+	VS nal3_r_array;
+	/////////////////////////////
+
+	std::string fa_library_file;
+
+	std::vector<double> _gapSize;
+	std::vector<std::string> _gapSizePlaneConstant;
+	std::vector<std::string> _gapSizeCornerConstant;
+	int maxGapVal;
+	int minGapVal;
+	std::string planePredictor, cornerPredictor;
+	double stepGapValue;
+	int geometry;
+	double reflectorDistance;
+	bool isInitialized;
+	bool isModifierAccounted;
+	// Classes:
 private:
 	Calculation m_Compilation;
 	Coordinates m_coreCoordinates;
 	FileHandler file;
 	std::vector<Assembly> _fuelAssemblies;
-	std::set<std::string> nal2;
+	ConstantsHashTable CHT;
+	/////////////////////////////
 
 };
+
+
+#include "Loading test parameters.h"
+#include "Permapar.h"
+#include "ASsemblies_Calculations.h"

@@ -40,6 +40,16 @@ public:
 		p_consts[_side] = _p;
 	}
 
+	std::vector<std::string> GetPlaneConstants() const
+	{
+		return p_consts;
+	}
+
+	std::vector<std::string> GetCornerConstants() const
+	{
+		return c_consts;
+	}
+
 	void SetShift()
 	{
 		shift_x = _current_coordinate_x - _project_coordinate_x;
@@ -122,10 +132,12 @@ public:
 		}
 	}
 
-	int GetNumber() const
+	void SetMapk(int mapk_num)
 	{
-		return _tvs_number;
+		mapk = mapk_num;
 	}
+
+
 
 private:
 	double step, fa_size;
@@ -140,4 +152,5 @@ private:
 	double shift_x;
 	double shift_y;
 	std::vector<std::string> c_consts, p_consts;
+	int mapk;
 };

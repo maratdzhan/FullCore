@@ -10,8 +10,11 @@ int main()
 		// Start calculating
 	for (const auto & content : handle.FilesList())
 	{
-		Core CurrentLoad(content);
-		CurrentLoad.LoadingAssembly();
+		if (content.IsCalculationInitialized()) {
+			Core CurrentLoad(content);
+			CurrentLoad.LoadingAssemblies();
+			CurrentLoad.PermparMaking();
+		}
 	}
 
 

@@ -80,6 +80,7 @@ std::string GetStringParam(const std::string &inputString, size_t number)
 	{
 		std::cerr << exc.what() << std::endl;
 	}
+	return ("ERROR -> GetStringParam -> " + inputString);
 }
 
 std::string ReturnNumbers(std::string str)
@@ -105,6 +106,7 @@ std::string ReturnNumbers(std::string str)
 	catch (const std::invalid_argument& EX)
 	{
 		result = "0";
+		std::cerr << EX.what() << std::endl;
 	}
 	return result;
 }
@@ -114,12 +116,18 @@ void ToUpperFunct(std::string & str)
 	std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 }
 
-void PathPreparing(std::string & assumedPath)
+void PathPreparing(std::string & assumedPath, int _type)
 {
+	char replacer=0;
+	if (_type == 0)
+		replacer = '/';
+	else
+		replacer=92;
 	for (size_t i = 0; i < assumedPath.length(); ++i)
 	{
-		if (char(assumedPath[i]) == '\\')
-			assumedPath[i] = '/';
+		if (char(assumedPath[i]) == '\\') {
+			assumedPath[i] = replacer;
+		}
 	}
 }
 
@@ -131,13 +139,24 @@ void SymbolsDeleting(std::string & inputString)
 	inputString.clear();
 	for (size_t i = 0; i < _newString.size(); ++i)
 	{
-		if (	(char(_newString[i]) != 32)
-			&& (char(_newString[i]) > 47) 
-			&& (char(_newString[i]) < 58)
-			&& (char(_newString[i])  >64)  
-			&& (char(_newString[i]) < 91) 
-			&& (char(_newString[i]) > 96)
-			&& (char(_newString[i]) < 123))
-			inputString += _newString[i];
+		if ((char(_newString[i]) != 32)) {
+			if (( (char(_newString[i]) > 47) && (char(_newString[i]) < 58))
+				||((char(_newString[i]) > 64) && (char(_newString[i]) < 91))
+				||((char(_newString[i]) > 96) && (char(_newString[i]) < 123)))
+				inputString += _newString[i];
+		}
+	}
+}
+
+
+
+void FromStringVectorToString(std::string & _ai, std::vector<std::string> mapk, char _separator, int start_pos, int end_pos)
+{
+	if (end_pos == -1)
+		end_pos = mapk.size();
+
+	for (int i = start_pos; i < end_pos; i++) {
+		_ai += ((mapk[i]));
+		_ai += _separator;
 	}
 }
