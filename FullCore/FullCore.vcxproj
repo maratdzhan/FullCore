@@ -133,7 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="163CommonHeader.h" />
-    <ClInclude Include="ASsemblies_Calculations.h" />
+    <ClInclude Include="Assemblies_Calculations.h" />
     <ClInclude Include="Assemblies_Class.h" />
     <ClInclude Include="Coordinates_Definition.h" />
     <ClInclude Include="Extraction.h" />
@@ -142,6 +142,7 @@
     <ClInclude Include="HashTables.h" />
     <ClInclude Include="kk_calculating.h" />
     <ClInclude Include="Loading test parameters.h" />
+    <ClInclude Include="Newdata.h" />
     <ClInclude Include="Permapar.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

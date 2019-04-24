@@ -89,7 +89,10 @@
     <ClInclude Include="Assemblies_Class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ASsemblies_Calculations.h">
+    <ClInclude Include="Assemblies_Calculations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Newdata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

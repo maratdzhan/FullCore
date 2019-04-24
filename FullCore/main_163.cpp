@@ -14,6 +14,7 @@ int main()
 			Core CurrentLoad(content);
 			CurrentLoad.LoadingAssemblies();
 			CurrentLoad.PermparMaking();
+			CurrentLoad.NewdataMaking();
 		}
 	}
 

@@ -6,7 +6,8 @@ class Assembly
 public:
 	Assembly()
 	{
-
+		_tvs_number = 0;
+		mapk = 0;
 		_project_coordinate_x = -10000;
 		_project_coordinate_y = -10000;
 		_current_coordinate_x = -10000;
@@ -21,6 +22,8 @@ public:
 		p_consts.resize(geometry);
 		shift_x = 0;
 		shift_y = 0;
+
+
 	}
 
 	void Initialize(double tvs_size, 

@@ -379,22 +379,87 @@ private:
 
 class Core
 {
+private:
+	double _tvs_size;
+	double _tvs_step;
+	double nominalGapSize;
+	std::string _pp_library;
+	uint16_t _fa_count;
+	uint16_t _tvel_count;
+	uint16_t _tveg_count;
+	uint16_t _node_count;
+	uint8_t _coordinate_system = 0;
+	std::vector<double> first_coodinate;
+	std::vector<double> second_coordinate;
+
+
+	std::string p_workdirectory;
+	std::string p_project_name;
+	uint8_t unit_number;
+	uint8_t fuel_cycle_number;
+
+	// Permpar:
+	VS permpar;
+	VS toPermpar;
+	VS constants;
+	std::string _c_library;
+	std::string permpar_path;
+	std::vector<uint16_t> _mapn;
+	std::vector<std::vector<int>> mapkas;
+	std::set<std::string> nal2;
+	std::set<std::string> nal3;
+	VS nal2array;
+	VS nal3array;
+	VS nal2_r_array;
+	VS nal3_r_array;
+	/////////////////////////////
+
+	std::string fa_library_file;
+
+	std::vector<double> _gapSize;
+	std::vector<std::string> _gapSizePlaneConstant;
+	std::vector<std::string> _gapSizeCornerConstant;
+	int maxGapVal;
+	int minGapVal;
+	std::string planePredictor, cornerPredictor;
+	double stepGapValue;
+	double reflectorDistance;
+	int geometry=0;
+	bool isInitialized;
+	bool isModifierAccounted;
+	// Classes:
+private:
+	Calculation m_Compilation;
+	Coordinates m_coreCoordinates;
+	FileHandler file;
+	std::vector<Assembly> _fuelAssemblies;
+	ConstantsHashTable CHT;
+	/////////////////////////////
+
+
 public:
-	Core(const Calculation & _currentObject)
+	Core(const Calculation& _currentObject)
 	{
+		_tvs_size = _tvs_step = nominalGapSize = 0;
+		_fa_count = _tvel_count = _tveg_count = _node_count = 0;
+		_coordinate_system = 0;
+		unit_number = fuel_cycle_number = 0;
+		maxGapVal = minGapVal = 0;
+		stepGapValue = reflectorDistance = 0;
+		geometry = 6;
+
+		isInitialized = _currentObject.IsCalculationInitialized();
+		isModifierAccounted = true;
+
+		if (_currentObject.IsCalculationInitialized()) {
 		try {
-			if (_currentObject.IsCalculationInitialized()) {
+			
 				// Set inner variables
-				isModifierAccounted = true;
-				maxGapVal = 0;
-				minGapVal = 0;
-				stepGapValue = reflectorDistance = 0;
-				geometry = 6;
-				isInitialized = _currentObject.IsCalculationInitialized();
-				_fa_count = _tvel_count = _tveg_count = _node_count = 0;
-				_tvs_size = _tvs_step = _coordinate_system = 0;
-				fuel_cycle_number = unit_number = 0;
-				nominalGapSize = 0;
+
+
+
+
+
 				//  Begin work cycle
 				std::cout << "Handling begin:"
 					<< _currentObject.GetTestName() << std::endl;
@@ -406,10 +471,11 @@ public:
 				CreatePermparFile();
 			}
 
-		}
+		
 		catch (std::exception & Core_constructor_exception)
 		{
 			std::cerr << Core_constructor_exception.what();
+		}
 		}
 	}
 
@@ -451,70 +517,17 @@ public:
 	int FindTheConstant(const std::string & _id) const;
 	void SetCornerGapsForTvs(Assembly &tvs);
 	void SetGapsForTvs(Assembly &tvs);
+//// Making newdata file
+	void NewdataMaking();
 
 
 
 
-private:
-	double _tvs_size;
-	double _tvs_step;
-	double nominalGapSize;
-	std::string _pp_library;
-	uint16_t _fa_count;
-	uint16_t _tvel_count;
-	uint16_t _tveg_count;
-	uint16_t _node_count;
-	uint8_t _coordinate_system;
-	std::vector<double> first_coodinate;
-	std::vector<double> second_coordinate;
-
-
-	std::string p_workdirectory;
-	std::string p_project_name;
-	uint8_t unit_number;
-	uint8_t fuel_cycle_number;
-
-	// Permpar:
-	VS permpar;
-	VS toPermpar;
-	VS constants;
-	std::string _c_library;
-	std::string permpar_path;
-	std::vector<uint16_t> _mapn;
-	std::vector<std::vector<int>> mapkas;
-	std::set<std::string> nal2;
-	std::set<std::string> nal3;
-	VS nal2array;
-	VS nal3array;
-	VS nal2_r_array;
-	VS nal3_r_array;
-	/////////////////////////////
-
-	std::string fa_library_file;
-
-	std::vector<double> _gapSize;
-	std::vector<std::string> _gapSizePlaneConstant;
-	std::vector<std::string> _gapSizeCornerConstant;
-	int maxGapVal;
-	int minGapVal;
-	std::string planePredictor, cornerPredictor;
-	double stepGapValue;
-	int geometry;
-	double reflectorDistance;
-	bool isInitialized;
-	bool isModifierAccounted;
-	// Classes:
-private:
-	Calculation m_Compilation;
-	Coordinates m_coreCoordinates;
-	FileHandler file;
-	std::vector<Assembly> _fuelAssemblies;
-	ConstantsHashTable CHT;
-	/////////////////////////////
 
 };
 
 
 #include "Loading test parameters.h"
 #include "Permapar.h"
-#include "ASsemblies_Calculations.h"
+#include "Assemblies_Calculations.h"
+#include "Newdata.h"

@@ -361,7 +361,8 @@ void Core::CraftGapsList()
 
 	if (maxGapVal > minGapVal)
 	{
-		double _currentValue = minGapVal * multiplier - stepGapValue;
+		double pr = static_cast<double>(minGapVal) * multiplier;
+		double _currentValue = pr - stepGapValue;
 		while (_currentValue / multiplier <= maxGapVal)
 		{
 			_currentValue += stepGapValue;

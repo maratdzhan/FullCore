@@ -4,6 +4,13 @@
 class Node
 {
 public:
+	Node()
+	{
+		next = NULL;
+		itemIndex = -1;
+
+	}
+
 	Node * next;
 	int itemIndex;
 	std::string itemData;
@@ -121,9 +128,6 @@ public:
 	}
 
 private:
-	int charactersCount;
-	int digitsCount;
-	int letterscount;
 	std::vector<ConstantsList> _constants;
 	int _hashSize;
 };

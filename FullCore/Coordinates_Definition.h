@@ -38,6 +38,11 @@
 class Coordinates
 {
 public:
+	Coordinates()
+	{
+		core_fa_count = 0;
+	}
+
 	void AddLibrary(const std::string & _path_value)
 	{
 		m_fa_library_path = _path_value;
@@ -58,7 +63,7 @@ public:
 
 		const char *path = m_fa_library_path.c_str();
 
-		_chdir(path);
+		int tr = _chdir(path);
 
 		hLibrary_163 = LoadLibrary(("Coordinates_Definition"));
 		double(*pFunction) (double, int, bool);
