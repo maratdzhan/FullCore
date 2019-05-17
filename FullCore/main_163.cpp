@@ -19,7 +19,6 @@ int main()
 	}
 
 
-	// Last were 300 ms;
- 	return 0;
+	return 0;
 }
  

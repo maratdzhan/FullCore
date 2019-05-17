@@ -95,5 +95,8 @@
     <ClInclude Include="Newdata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="File handler files.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

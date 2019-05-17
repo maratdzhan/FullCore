@@ -1,3 +1,4 @@
+#include "163CommonHeader.h"
 #pragma once
 
 void Core::FileReading()
@@ -10,7 +11,7 @@ void Core::FileReading()
 	ReadingPermpar();
 	ReadingConstants();
 	ReadingBasement();
-
+	ReadingNewdataParameters();
 	//	if (key)
 	//		ReadingBunrup();
 }
@@ -305,6 +306,20 @@ void Core::ReadingConstants()
 	//		CHT.PrintAll();
 }
 
+void Core::ReadingNewdataParameters()
+{
+	try {
+		newdata_parameters = file.GetLine(m_Compilation.GetFileByName("NEWDATA.DAT"));
+		if (newdata_parameters.empty())
+			throw (std::invalid_argument(">>>>>>\nEmpy newdata.dat file\n>>>>>\n"));
+	}
+	catch (std::exception & ndexc)
+	{
+		std::cerr << ndexc.what() << __FUNCTION__ << std::endl;
+	}
+
+}
+
 void Core::ListHandle(const std::string & inputString)
 {
 	std::string parameter = (GetStringParam(inputString, 1));
@@ -361,7 +376,7 @@ void Core::CraftGapsList()
 
 	if (maxGapVal > minGapVal)
 	{
-		double pr = static_cast<double>(minGapVal) * multiplier;
+		auto pr = static_cast<double>(minGapVal) * multiplier;
 		double _currentValue = pr - stepGapValue;
 		while (_currentValue / multiplier <= maxGapVal)
 		{

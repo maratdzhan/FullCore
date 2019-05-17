@@ -137,6 +137,7 @@
     <ClInclude Include="Assemblies_Class.h" />
     <ClInclude Include="Coordinates_Definition.h" />
     <ClInclude Include="Extraction.h" />
+    <ClInclude Include="File handler files.h" />
     <ClInclude Include="GetParam.h" />
     <ClInclude Include="GraphParameters_163.h" />
     <ClInclude Include="HashTables.h" />

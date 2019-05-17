@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 
 std::string GetStringParam(const std::string &inputString, size_t number);
@@ -13,6 +14,8 @@ void PathPreparing(std::string & assumedPath, int _type_of_replacer);
 void SymbolsDeleting(std::string & inputString);
 double SetCorrection(double cb, double gam, double ro5, double gs);
 void FromStringVectorToString(std::string & _outputString, std::vector<std::string> inputVector, char _separator, int start_pos, int end_pos);
+void DebugWriteToFile(std::vector<std::vector<double>>input);
+
 
 template < typename T >
 void GetParam(T & _value, const std::string & s, const size_t number)
@@ -43,7 +46,8 @@ void GetParam(T & _value, const std::string & s, const size_t number)
 			}
 		}
 
-		_value = static_cast<T>(stod(resultString));
+		if (!resultString.empty())
+			_value = static_cast<T>(stod(resultString));
 		
 	}
 	catch (std::exception & exc)
@@ -64,3 +68,4 @@ void FromNumericalVectorToString(std::string & _ai, std::vector<K> mapk, char _s
 	}
 
 }
+

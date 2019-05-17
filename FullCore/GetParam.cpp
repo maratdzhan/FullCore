@@ -160,3 +160,17 @@ void FromStringVectorToString(std::string & _ai, std::vector<std::string> mapk, 
 		_ai += _separator;
 	}
 }
+
+void DebugWriteToFile(std::vector<std::vector<double>>input)
+{
+	std::ofstream dofs;
+	dofs.open("OTL.VMN");
+
+	for (const auto& subvector : input)
+	{
+		for (const auto& item : subvector)
+		{
+			dofs << item << std::endl;
+		}
+	}
+}
