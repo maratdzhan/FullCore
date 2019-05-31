@@ -48,11 +48,16 @@ void GetParam(T & _value, const std::string & s, const size_t number)
 
 		if (!resultString.empty())
 			_value = static_cast<T>(stod(resultString));
+		else
+			_value = -1;
 		
 	}
 	catch (std::exception & exc)
 	{
-		std::cerr << exc.what() << std::endl;
+		std::string error_text = exc.what();
+		error_text+= +" at <" + s + ">";
+		error_text += "at pos " + number;
+		std::cerr << error_text << std::endl;
 	}
 }
 

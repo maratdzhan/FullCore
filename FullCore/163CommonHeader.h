@@ -20,6 +20,7 @@
 
 
 using VS=std::vector<std::string>;
+using SS=std::set<std::string>;
 
 #include "GetParam.h"
 
@@ -36,6 +37,7 @@ using VS=std::vector<std::string>;
 class Core
 {
 private:
+	int noErrors;
 	double _tvs_size;
 	double _tvs_step;
 	double nominalGapSize;
@@ -47,7 +49,7 @@ private:
 	uint8_t _coordinate_system = 0;
 	std::vector<double> first_coodinate;
 	std::vector<double> second_coordinate;
-
+	uint8_t accounted_points_number;
 
 	std::string p_workdirectory;
 	std::string p_project_name;
@@ -55,15 +57,15 @@ private:
 	uint8_t fuel_cycle_number;
 	// Newdata:
 private:
-	std::vector<int> m_time_points;
+	std::vector<int16_t> m_time_points,m_xe_flag, m_sm_flag, m_dopler_flag;;
 	int m_states_number;
-	int m_xe_flag, m_sm_flag, m_dopler_flag;
 	int m_nbippar;
 	int m_symmetry;
 	int m_ireg;
-	std::vector<std::vector<double>> m_temp, m_gam;
+	std::vector<std::vector<double>> m_temp, m_gam, m_backl;
 	std::vector<double> m_itemp, m_igam, m_wud, m_bor;
 	VS newdata_parameters;
+	std::string newdataPath;
 	// Permpar:
 private:
 	VS permpar;
@@ -112,13 +114,13 @@ public:
 		_coordinate_system = 0;
 		unit_number = fuel_cycle_number = 0;
 		m_states_number=0;
-		m_xe_flag = m_sm_flag = m_dopler_flag = 0;
+		noErrors = 0;
 		m_nbippar = m_symmetry = 0;
 		m_ireg = 0;
 		maxGapVal = minGapVal = 0;
 		stepGapValue = reflectorDistance = 0;
 		geometry = 6;
-
+		accounted_points_number = 0;
 		isInitialized = _currentObject.IsCalculationInitialized();
 		isModifierAccounted = true;
 
@@ -126,12 +128,13 @@ public:
 		try {
 
 				//  Begin work cycle
-				std::cout << "Handling begin:"
+				std::cout << "===============\nHandling begin:"
 					<< _currentObject.GetTestName() << std::endl;
 				m_Compilation = { _currentObject.List() };
 				m_Compilation.SetFilesNames(_currentObject.GetFilesNames());
 				m_Compilation.SetTestName(_currentObject.GetTestName());
 				m_Compilation.SetInitializing();
+				m_Compilation.CopyPathsMap(_currentObject.PathsMap());
 				FileReading();
 				CreatePermparFile();
 			}
@@ -156,7 +159,12 @@ public:
 	void ReadingPermpar();
 	void ReadingConstants();
 	void ReadingNewdataParameters();
-
+	template<typename K>
+	void _WriteToStream(std::ostream& ofs, const K& inputCollection, unsigned int _init_pos, unsigned int _end_pos);
+	template<typename K>
+	void _Comp_WriteToStream(std::ostream& ofs, const K& inputCollection, unsigned int _init_pos, unsigned int _end_pos);
+	template<typename K>
+	bool _GetParametersFromFile(K& inputCollection, const std::string & file);
 //// Readed files handling
 	void ListHandle(const std::string & inputString);
 	void GapsListParameters(uint8_t _parameter, std::string & _value);
@@ -191,11 +199,16 @@ public:
 	template<typename K>
 	void GetPoints(const std::string& inputString, std::vector<K> & inputArray, int initPos);
 	void GetBurnupHistory();
+	void GetStatesParameters();
 	void GetDensity();
 	void GetTemperatures();
+	void GetBacklings();
 	void GetSpecificPower();
 	void GetBoricAcid();
-
+	void NewdataForming();
+	void NewdataPathForming();
+	void GenerateCommonParameters(std::ostream& ofs);
+	bool CheckInputDataStates();
 
 };
 

@@ -16,6 +16,7 @@ enum parametersName
 	project,
 	unit,
 	fuel_cycle,
+	accounted_points,
 };
 
 enum newdataParameters
@@ -30,6 +31,7 @@ enum newdataParameters
 	ireg,
 	itemp,
 	igam,
+	time_points,
 };
 
 struct FileHandler
@@ -37,7 +39,7 @@ struct FileHandler
 public:
 //** - not using so commented
 
-	//// Using getline methdo to read file
+	//// Using getline method to read file
 	std::vector<std::string> GetLine(const std::string& _path)
 	{
 		std::string currentString;
@@ -56,7 +58,7 @@ public:
 				}
 			}
 			else {
-				throw (std::invalid_argument("Cant find <" + _path + "> \n"));
+				throw (std::invalid_argument("Cant find file <" + _path + "> \n"));
 			}
 			iFile.close();
 		}
@@ -102,6 +104,8 @@ public:
 				return unit;
 			if (temporary == "FUEL_CYCLE")
 				return fuel_cycle;
+			if (temporary == "ACCOUNTED_POINTS")
+				return accounted_points;
 
 
 			throw std::invalid_argument("unknown argument " + _parameterName);
@@ -114,6 +118,28 @@ public:
 		return unknown;
 	}
 
+	//// Using CreatePath method to create folders
+	int CreatePath(const std::string _path)
+	{
+		std::string t;
+		if (CreateDirectory(_path.c_str(), NULL))
+		{
+			t = "- Directory " + (_path)+" created.\n";
+			return 1;
+		}
+		else {
+		//	ToConsole(GetLastError());
+			if (GetLastError() == ERROR_ALREADY_EXISTS) {
+				t = "Directory " + _path+ " already exists.\n";
+				return 0;
+			}
+			else if (GetLastError() == ERROR_PATH_NOT_FOUND) {
+				t = "WARNING! Directory " + _path + " is not created. \n";
+				return -1;
+			}
+		}
+		return -1;
+	}
 
 	//// WOULD BE REPLACED BY HASHTABLE
 	newdataParameters GetNewdataType(const std::string& _parameterName)
@@ -167,15 +193,18 @@ struct Calculation
 		m_isInitialized = false;
 	}
 
-	Calculation(const VS& _filesList)
+	Calculation(const std::set<std::string>& _filesList)
 	{
 		m_isInitialized = false;
 		m_filesList = _filesList;
 
 	}
 
-	void SetFilesNames(const VS& _filesList)
+	void SetFilesNames(const std::set<std::string>& _filesList)
 	{
+//		SetInitializing();
+//		for (const auto& item : _filesList)
+
 		m_filesName = _filesList;
 	}
 
@@ -183,25 +212,9 @@ struct Calculation
 	void SetInitializing()
 	{
 		m_isInitialized = true;
-		MapDistribution();
 	}
 
 	//// Make the relation between file path (value) and his name (key)
-	void MapDistribution()
-	{
-		for (auto& item : m_filesList)
-		{
-			ToUpperFunct(item);
-		}
-		std::sort(m_filesList.begin(), m_filesList.end());
-		std::sort(m_filesName.begin(), m_filesName.end());
-		for (size_t i = 0; i < m_filesName.size(); ++i)
-		{
-
-			m_filesListMap[m_filesName[i]] = m_filesList[i];
-		}
-
-	}
 
 	//// Returns key-value list of files
 	std::map<std::string, std::string> GetFilesSet() const
@@ -224,7 +237,7 @@ struct Calculation
 	}
 
 	//// Returns the list with file path
-	VS List() const
+	SS List() const
 	{
 		return m_filesList;
 	}
@@ -242,7 +255,7 @@ struct Calculation
 	}
 
 	//// Returns list with file name
-	VS GetFilesNames() const
+	SS GetFilesNames() const
 	{
 		return m_filesName;
 	}
@@ -253,10 +266,26 @@ struct Calculation
 		return m_isInitialized;
 	}
 
+	void SetMap(const std::string & _key, const std::string & _value)
+	{
+		m_filesListMap[_key] = _value;
+	}
+
+	void CopyPathsMap(const std::map<std::string, std::string>& _map)
+	{
+		if (!_map.empty())
+			m_filesListMap = _map;
+	}
+
+	std::map<std::string, std::string> PathsMap() const 
+	{
+		return m_filesListMap;
+	}
+
 private:
 	bool m_isInitialized;
-	VS m_filesList;
-	VS m_filesName;
+	SS m_filesList;
+	SS m_filesName;
 	std::string m_name;
 	std::map<std::string, std::string> m_filesListMap;
 };
@@ -287,20 +316,27 @@ public:
 		for (size_t j = 0; j < m_relativeFileList.size(); ++j)
 		{
 			size_t counter = 0;
-			VS item = m_relativeFileList[j].List();
+			SS item = m_relativeFileList[j].List();
+			SS fnames = fileList;
 			for (auto file : item)
 			{
 				ToUpperFunct(file);
-				for (size_t i = 0; i < fileList.size(); ++i)
+				// //== - mean old algorithm
+				// ///	- mean new algorithm
+
+				for (const auto& fitem : fnames)
 				{
-					if (file.find(fileList[i]) != -1)
+					if (file.find(fitem) != -1)
 					{
+						m_relativeFileList[j].SetMap(fitem, file);
+						item.erase(file);
+						fnames.erase(fitem);
 						counter++;
 						break;
 					}
 				}
 			}
-			if (counter != fileList.size() - 1)
+			if (counter != fileList.size())
 			{
 				std::cerr << "calculation cant be prepared: "
 					<< m_relativeFileList[j].GetTestName() << " not inizialized. Reason:\nWrong input file's count\n";
@@ -308,26 +344,33 @@ public:
 			else
 				m_relativeFileList[j].SetInitializing();
 		}
-
+		
 	}
 
 	// List with necessary files
 	void FileListInitialize()
 	{
-		fileList.push_back("BASEMENT.NAR");
-		fileList.push_back("BOR.CON");
-		fileList.push_back("CONST.DAT");
-		fileList.push_back("COORDS.PVM");
-		fileList.push_back("GAM.CON");
-		fileList.push_back("LIST.TXT");
-		fileList.push_back("MAPKAS.DAT");
-		fileList.push_back("MAPN.DAT");
-		fileList.push_back("NEWDATA.DAT");
-		fileList.push_back("PARAMETERS.LOAD");
-		fileList.push_back("PERMAPAR_INPUT.DAT");
-		fileList.push_back("TEMP.CON");
-		fileList.push_back("TIME_POINTS.CON");
-		fileList.push_back("WUD.CON");
+		fileList.insert("BASEMENT.NAR");
+		fileList.insert("BOR.CON");
+		fileList.insert("CONST.DAT");
+		fileList.insert("COORDS.PVM");
+		fileList.insert("GAM.CON");
+		fileList.insert("LIST.TXT");
+		fileList.insert("MAPKAS.DAT");
+		fileList.insert("MAPN.DAT");
+		fileList.insert("NEWDATA.DAT");
+		fileList.insert("PARAMETERS.LOAD");
+		fileList.insert("PERMPAR_INPUT.DAT");
+		fileList.insert("TEMP.CON");
+		fileList.insert("TIME_POINTS.CON");
+		fileList.insert("WUD.CON");
+		fileList.insert("BACKL.CON");
+
+		fileList.insert("XE_FLAG.CON");
+		fileList.insert("SM_FLAG.CON");
+		fileList.insert("DOPL_FLAG.CON");
+		fileList.insert("INPUT_DENSITY.CON");
+		fileList.insert("INPUT_TEMP.CON");
 	}
 
 	// Return files list.. again?
@@ -380,12 +423,12 @@ private:
 	//// Add names to files list
 	void GetFilesList(const std::string & folder)
 	{
-		VS m_absoluteFileList;
+		SS m_absoluteFileList;
 		//std::string name = 
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(folder)) {
 			std::string entire = entry.path().string();
 
-			m_absoluteFileList.push_back(entry.path().string());
+			m_absoluteFileList.insert((entry.path().string()));
 
 			//// Must run reversely (back order)
 				//for (unsigned int i = 0; i < folder.size(); i++) {
@@ -405,6 +448,9 @@ private:
 		innerStruct_data = innerStruct_bin + char(92) + "data";
 		innerStruct_Cr = innerStruct_data + char(92) + "Cr";
 		innerStruct_res = innerStruct_bin + char(92) + "res";
+		std::cerr << fileReader.CreatePath(innerStruct_data) << " ";
+		std::cerr << fileReader.CreatePath(innerStruct_Cr) << " ";
+		std::cerr << fileReader.CreatePath(innerStruct_res) << " \n";
 	}
 
 private:
@@ -418,7 +464,7 @@ private:
 	std::string mainParameters = "gap.par";
 	VS temp;
 	VS testName;
-	VS fileList;
+	std::set<std::string> fileList;
 	std::map<std::string, std::string> parametersList;
 	std::vector<Calculation> m_relativeFileList;
 };

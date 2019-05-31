@@ -69,6 +69,9 @@ void Core::ReadingParameters()
 		case (fuel_cycle):
 			GetParam(fuel_cycle_number, item, 2);
 			break;
+		case (accounted_points):
+			GetParam(accounted_points_number, item, 2);
+			break;
 		default:
 
 			break;
@@ -275,7 +278,7 @@ void Core::ReadingPermpar()
 {
 	try {
 		permpar =
-			file.GetLine(m_Compilation.GetFileByName("PERMAPAR_INPUT.DAT"));
+			file.GetLine(m_Compilation.GetFileByName("PERMPAR_INPUT.DAT"));
 		if (permpar.empty())
 			throw(std::invalid_argument(">>>\nEmpty permpar_input list\n>>>\n"));
 		// Тут аккуратно: мы считали файл, в котором есть замены типа "KASSET"
