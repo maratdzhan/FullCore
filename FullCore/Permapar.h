@@ -160,9 +160,9 @@ void Core::AssembliesArrayForming()
 	std::string _assemblyInfo;
 	for (const auto assembly : _fuelAssemblies)
 	{
-		int _num = assembly.GetTvsNumber();
+		size_t _num = assembly.GetTvsNumber();
 		int type = _mapn.at(_num);
-		int _size = 0;
+		size_t _size = 0;
 		for (const auto & mapk : mapkas)
 		{
 			if (mapk[0] == type)

@@ -27,6 +27,7 @@ void Core::CycleSetNeigsForTvs()
 
 void Core::LoadingAssemblies()
 {
+	
 	_fuelAssemblies.resize(_fa_count);
 	double x = 0;
 	double y = 0;
@@ -34,6 +35,10 @@ void Core::LoadingAssemblies()
 	m_coreCoordinates.AddLibrary(fa_library_file);
 	m_coreCoordinates.SetSize(_fa_count);
 	m_coreCoordinates.GetTvsCoordinates(_tvs_step);
+	if (m_coreCoordinates.GetErrors()) {
+		noErrors = 1;
+		return;
+	}
 	m_coreCoordinates.NeigArrayInitializing();
 	std::vector<std::pair<double, double>> coordinates = m_coreCoordinates.V_ReturnCoordinatesTvs();
 	// Ключ для данных тутнова;
@@ -57,9 +62,9 @@ void Core::LoadingAssemblies()
 
 std::pair<size_t, double> Core::Rounding(double _gs) const
 {
-	int i = 0;
-	int j = _gapSize.size();
-	int k = 0;
+	size_t i = 0;
+	size_t j = _gapSize.size();
+	size_t k = 0;
 	int itt = 0;
 	_gs *= 100;
 	static_cast<int>(_gs);

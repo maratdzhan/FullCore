@@ -93,7 +93,7 @@ public:
 				sumC += char(_item);
 		}
 
-		return (_cstr.size()* (sumN*sumC));
+		return (static_cast<int>(_cstr.size())* (sumN*sumC));
 	}
 
 	bool IsItemDigit(const char item) const

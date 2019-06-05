@@ -209,6 +209,7 @@ public:
 	void NewdataPathForming();
 	void GenerateCommonParameters(std::ostream& ofs);
 	bool CheckInputDataStates();
+	void PermutationForming(std::ostream& ofs);
 
 };
 

@@ -21,8 +21,9 @@ void Core::NewdataMaking()
 	When first parameters array size reach tvs number, program change state (state mean next vector-array)
 	Now call <NewDataForming()>
 	*/
-	if (noErrors==0)
+	if (noErrors == 0) {
 		NewdataForming();
+	}
 }
 
 void Core::NewdataPS()
@@ -266,6 +267,7 @@ void Core::NewdataForming()
 	for (int i = 1; i <= _fa_count; i++)
 		ofs << i << ",";
 	ofs << "\n";
+//	PermutationForming(ofs);
 	ofs << "&end" << std::endl;
 	ofs.close();
 }
@@ -290,3 +292,30 @@ bool Core::CheckInputDataStates()
 
 }
 
+void Core::PermutationForming(std::ostream& ofs)
+{
+	// There insert MAPN_ADD && MAPN_CHNG
+	ofs << "MAPN_ADD=\n";
+	
+	for (int i = 0; i < m_states_number; i++)
+	{
+		for (int j = 0; j < _fa_count; j++)
+		{
+			ofs << 1+j + _fa_count * i;
+			ofs << ",";
+		}
+		ofs << "\n";
+	}
+
+
+	ofs << "NM_CHNG=\n";
+	for (int i = 0; i < m_states_number; i++)
+	{
+		for (int j = 0; j < _fa_count; j++)
+		{
+			ofs << 1+j + _fa_count * i;
+			ofs << ",";
+		}
+		ofs << "\n";
+	}
+}

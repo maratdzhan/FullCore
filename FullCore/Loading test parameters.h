@@ -299,7 +299,7 @@ void Core::ReadingConstants()
 			throw(std::invalid_argument(">>>\nEmpty constants list\n>>>\n"));
 		else
 			for (size_t i = 0; i < constants.size(); ++i)
-				CHT.Put(constants[i], i + 1);
+				CHT.Put(constants[i], static_cast<int>(i + 1));
 		// Тут аккуратно: мы считали файл, в котором есть замены типа "KASSET"
 	}
 	catch (std::exception & constExc)

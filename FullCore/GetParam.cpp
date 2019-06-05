@@ -153,7 +153,7 @@ void SymbolsDeleting(std::string & inputString)
 void FromStringVectorToString(std::string & _ai, std::vector<std::string> mapk, char _separator, int start_pos, int end_pos)
 {
 	if (end_pos == -1)
-		end_pos = mapk.size();
+		end_pos = static_cast<int>(mapk.size());
 
 	for (int i = start_pos; i < end_pos; i++) {
 		_ai += ((mapk[i]));

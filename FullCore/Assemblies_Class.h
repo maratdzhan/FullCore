@@ -123,7 +123,7 @@ public:
 		neigs = _neigs;
 	}
 
-	int GetNeig(int _side)
+	int GetNeig(size_t _side)
 	{
 		try {
 			return neigs.at(_side);

@@ -41,6 +41,7 @@ public:
 	Coordinates()
 	{
 		core_fa_count = 0;
+		m_errors = 0;
 	}
 
 	void AddLibrary(const std::string & _path_value)
@@ -76,7 +77,7 @@ public:
 				else
 				{
 					double x = 0, y = 0;
-					for (size_t i = 1; i <= core_fa_count; ++i)
+					for (int i = 1; i <= static_cast<int>(core_fa_count); ++i)
 					{
 						x = pFunction(fa_step, i, true);
 						y = pFunction(fa_step, i, false);
@@ -86,11 +87,12 @@ public:
 			}
 			else
 			{
-				std::cerr << "ERROR OPENING LIBRARY => COORDINATES_DEFINITION.dll\n";
+				throw std::exception("ERROR OPENING LIBRARY = > COORDINATES_DEFINITION.dll\n");
 			}
 		}
 		catch (std::exception & lb_ex)
 		{
+			SetErrors(1);
 			std::cerr << lb_ex.what() << __FUNCTION__ << std::endl;
 		}
 	}
@@ -270,7 +272,7 @@ public:
 
 	}
 
-	std::vector<int> Neig_Array(int fa_num)
+	std::vector<int> Neig_Array(size_t fa_num)
 	{
 		
 		try {
@@ -286,10 +288,23 @@ public:
 		return { 0 };
 	}
 
+	int GetErrors() const
+	{
+		return m_errors;
+	}
+
 private:
+
+	void SetErrors(int _val)
+	{
+		m_errors = _val;
+	}
+
+
+
 	std::string m_fa_library_path;
 	size_t core_fa_count;
 	std::vector<std::pair<double, double>> m_coordinates;
 	std::vector<std::vector<int>> neighbor_array;
-	
+	int m_errors;
 };
