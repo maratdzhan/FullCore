@@ -137,9 +137,7 @@ public:
 				m_Compilation.CopyPathsMap(_currentObject.PathsMap());
 				FileReading();
 				CreatePermparFile();
-			}
-
-		
+			}		
 		catch (std::exception & Core_constructor_exception)
 		{
 			std::cerr << Core_constructor_exception.what();

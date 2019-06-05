@@ -10,7 +10,7 @@ void Core::CreatePermparFile()
 	if (!ofs.is_open())
 	{
 		std::cerr << __FUNCTION__;
-		throw (std::exception("--> CANT CREATE PERMPAR\n"));
+		throw (std::exception("--> CAN'T CREATE PERMPAR\n"));
 	}
 	ofs.close();
 }

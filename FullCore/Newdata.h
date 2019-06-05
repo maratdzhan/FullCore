@@ -267,7 +267,7 @@ void Core::NewdataForming()
 	for (int i = 1; i <= _fa_count; i++)
 		ofs << i << ",";
 	ofs << "\n";
-//	PermutationForming(ofs);
+	PermutationForming(ofs);
 	ofs << "&end" << std::endl;
 	ofs.close();
 }

@@ -43,6 +43,8 @@ void Core::LoadingAssemblies()
 	std::vector<std::pair<double, double>> coordinates = m_coreCoordinates.V_ReturnCoordinatesTvs();
 	// Ключ для данных тутнова;
 
+
+	/// One time point algorithm
 	for (size_t i = 0; i < _fa_count; ++i)
 	{
 		x = coordinates[i].first;
@@ -53,11 +55,43 @@ void Core::LoadingAssemblies()
 		_fuelAssemblies[i].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i]);
 	}
 
-	std::vector<int> neigs(geometry);
+	/// Arbitrary time points amouting algorithm
+	//try {
+	//	for (size_t num = 0; num < _fa_count; num++) {
+	//		_fuelAssemblies[num].Initialize(_tvs_size, _tvs_step, num);
+	//		x = coordinates[num].first;
+	//		y = coordinates[num].second;
+	//		_fuelAssemblies[num].SetProjectCoordinates(x, y);
+	//	}
 
-	CycleSetNeigsForTvs();
-	CycleSetPlaneGapsForTvs();
-	CycleSetCornerGapsForTvs();
+	//	size_t currentTvs = 0;
+	//	size_t currentTimePoint = 0;
+	//	size_t currentCoordinatePoint = 0;
+	//	size_t coordinatesCounter = 0;
+
+	//	// coordinates - library values of coordinates
+	//	while (true)
+	//	{
+	//		
+	//		_fuelAssemblies[currentTvs].SetCurrentCoordinates(first_coodinate[coordinatesCounter++], second_coordinate[coordinatesCounter++]);
+
+	//		if (++currentTvs == _fa_count) {
+	//			currentTimePoint++;
+	//			currentTvs = 0;
+	//		}
+
+	//	}
+	/// End of new algorithm
+		std::vector<int> neigs(geometry);
+
+		CycleSetNeigsForTvs();
+		CycleSetPlaneGapsForTvs();
+		CycleSetCornerGapsForTvs();
+	}
+	catch (std::exception & lfa)
+	{
+		std::cerr << __FUNCTION__ << " " << lfa.what() << std::endl;
+	}
 }
 
 std::pair<size_t, double> Core::Rounding(double _gs) const
