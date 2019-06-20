@@ -158,32 +158,40 @@ void Core::Nal3Generating()
 void Core::AssembliesArrayForming()
 {
 	std::string _assemblyInfo;
-	for (const auto assembly : _fuelAssemblies)
-	{
-		size_t _num = assembly.GetTvsNumber();
-		int type = _mapn.at(_num);
-		size_t _size = 0;
-		for (const auto & mapk : mapkas)
+	for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
+		for (const auto assembly : _fuelAssemblies)
 		{
-			if (mapk[0] == type)
+			size_t _num = assembly.GetTvsNumber();
+			int type = _mapn.at(_num);
+			size_t _size = 0;
+			for (const auto& mapk : mapkas)
 			{
-				_assemblyInfo += std::to_string(_num + 1) + ",";
-				FromNumericalVectorToString(_assemblyInfo, mapk, ',', 2, -1);
+				// Search similar mapk[] type
+				if (mapk[0] == type)
+				{
+
+					_assemblyInfo += std::to_string(_num%_fa_count+(_fa_count*_tp)+1) + ",";
+					FromNumericalVectorToString(_assemblyInfo, mapk, ',', 2, -1);
 
 
-				VS p_value = CyclingConstantFinding(assembly.GetPlaneConstants());
-				FromStringVectorToString(_assemblyInfo, p_value, ',', 0, -1);
-				VS c_value = CyclingConstantFinding(assembly.GetCornerConstants());
-				FromStringVectorToString(_assemblyInfo, c_value, ',', 0, -1);
-				// Calculate like (89*0):
-				// Size of planesConstants (6) + cornerConstants (6) +
-				// + [mapkas.size()-1] + 1 (number of fa)
-				_size = 100 - (mapk.size() + assembly.GetCornerConstants().size()
-					+ assembly.GetPlaneConstants().size());
-				_assemblyInfo += std::to_string(_size + 1) + "*0,";
-				toPermpar.push_back(_assemblyInfo);
-				_assemblyInfo.clear();
-				break;
+					VS p_value = CyclingConstantFinding(assembly.GetPlaneConstants(_tp));
+					FromStringVectorToString(_assemblyInfo, p_value, ',', 0, -1);
+					VS c_value = CyclingConstantFinding(assembly.GetCornerConstants(_tp));
+					FromStringVectorToString(_assemblyInfo, c_value, ',', 0, -1);
+					// Calculate like (89*0):
+					// Size of planesConstants (6) + cornerConstants (6) +
+					// + [mapkas.size()-1] + 1 (number of fa)
+					_size = 100 - (mapk.size() + assembly.GetCornerConstants(_tp).size()
+						+ assembly.GetPlaneConstants(_tp).size());
+					_assemblyInfo += std::to_string(_size + 1) + "*0,";
+					toPermpar.push_back(_assemblyInfo);
+					_assemblyInfo.clear();
+					// DEBUG
+//					if (_tp > 0 && (toPermpar.at(toPermpar.size() - 1) != toPermpar.at(toPermpar.size() - 164)))
+//						std::cerr << toPermpar.at(toPermpar.size() - 1) << " !=\n " << toPermpar.at(toPermpar.size() - 164) << std::endl << std::endl;
+					//
+					break;
+				}
 			}
 		}
 	}

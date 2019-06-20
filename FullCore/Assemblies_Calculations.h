@@ -3,17 +3,21 @@
 
 void Core::CycleSetPlaneGapsForTvs()
 {
-	for (auto & tvs : _fuelAssemblies)
-	{
-		SetGapsForTvs(tvs);
+	for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
+		for (auto& tvs : _fuelAssemblies)
+		{
+			SetGapsForTvs(tvs,_tp);
+		}
 	}
 }
 
 void Core::CycleSetCornerGapsForTvs()
 {
-	for (auto & tvs : _fuelAssemblies)
-	{
-		SetCornerGapsForTvs(tvs);
+	for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
+		for (auto& tvs : _fuelAssemblies)
+		{
+			SetCornerGapsForTvs(tvs,_tp);
+		}
 	}
 }
 
@@ -31,10 +35,12 @@ void Core::LoadingAssemblies()
 	_fuelAssemblies.resize(_fa_count);
 	double x = 0;
 	double y = 0;
+	/// Library handling
 	fa_library_file = _c_library + "Coordinates_Definition.dll";
 	m_coreCoordinates.AddLibrary(fa_library_file);
 	m_coreCoordinates.SetSize(_fa_count);
 	m_coreCoordinates.GetTvsCoordinates(_tvs_step);
+	/// 
 	if (m_coreCoordinates.GetErrors()) {
 		noErrors = 1;
 		return;
@@ -45,42 +51,33 @@ void Core::LoadingAssemblies()
 
 
 	/// One time point algorithm
-	for (size_t i = 0; i < _fa_count; ++i)
-	{
-		x = coordinates[i].first;
-		y = coordinates[i].second;
-		_fuelAssemblies[i].Initialize(_tvs_size, _tvs_step, i);
-		_fuelAssemblies[i].SetProjectCoordinates(x, y);
-		// here we must send coordinates and type of shift
-		_fuelAssemblies[i].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i]);
-	}
+	//for (size_t i = 0; i < _fa_count; ++i)
+	//{
+	//	x = coordinates[i].first;
+	//	y = coordinates[i].second;
+	//	_fuelAssemblies[i].Initialize(_tvs_size, _tvs_step, i);
+	//	_fuelAssemblies[i].SetProjectCoordinates(x, y);
+	//	// here we must send coordinates and type of shift
+	//	_fuelAssemblies[i].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i]);
+	//}
 
 	/// Arbitrary time points amouting algorithm
-	//try {
-	//	for (size_t num = 0; num < _fa_count; num++) {
-	//		_fuelAssemblies[num].Initialize(_tvs_size, _tvs_step, num);
-	//		x = coordinates[num].first;
-	//		y = coordinates[num].second;
-	//		_fuelAssemblies[num].SetProjectCoordinates(x, y);
-	//	}
+	try {
 
-	//	size_t currentTvs = 0;
-	//	size_t currentTimePoint = 0;
-	//	size_t currentCoordinatePoint = 0;
-	//	size_t coordinatesCounter = 0;
+		for (size_t num = 0; num < _fa_count; num++) {
+			x = coordinates[num].first;
+			y = coordinates[num].second;
+			_fuelAssemblies[num].Initialize(_tvs_size, _tvs_step, num);
+			_fuelAssemblies[num].SetProjectCoordinates(x, y);
+		}
 
-	//	// coordinates - library values of coordinates
-	//	while (true)
-	//	{
-	//		
-	//		_fuelAssemblies[currentTvs].SetCurrentCoordinates(first_coodinate[coordinatesCounter++], second_coordinate[coordinatesCounter++]);
+		size_t time_point = 0;
+		for (size_t i = 0; i < first_coodinate.size(); ++i)
+		{
+			_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i], time_point);
+			if ((i % _fa_count) + 1 == _fa_count) time_point++;
+		}
 
-	//		if (++currentTvs == _fa_count) {
-	//			currentTimePoint++;
-	//			currentTvs = 0;
-	//		}
-
-	//	}
 	/// End of new algorithm
 		std::vector<int> neigs(geometry);
 
@@ -146,7 +143,7 @@ int Core::FindTheConstant(const std::string & _id) const
 	return 0;
 }
 
-void Core::SetCornerGapsForTvs(Assembly &tvs)
+void Core::SetCornerGapsForTvs(Assembly &tvs, const size_t _time_point)
 {
 	double _result = 0;
 	bool isRef = false;
@@ -160,13 +157,13 @@ void Core::SetCornerGapsForTvs(Assembly &tvs)
 		Third: Gap at
 		*/
 		int _neig = -999;
-		double _first = tvs.GetGapSize(side);
-		double _second = tvs.GetGapSize((side - 1 + geometry) % geometry);
+		double _first = tvs.GetGapSize(side,_time_point);
+		double _second = tvs.GetGapSize((side - 1 + geometry) % geometry, _time_point);
 		double _third = 0;
 		_neig = tvs.GetNeig((side - 1 + geometry) % geometry) - 1;
 		if (_neig >= 0)
 		{
-			_third = _fuelAssemblies[_neig].GetGapSize((side + 1) % geometry);
+			_third = _fuelAssemblies[_neig].GetGapSize((side + 1) % geometry, _time_point);
 
 		}
 		else
@@ -174,7 +171,7 @@ void Core::SetCornerGapsForTvs(Assembly &tvs)
 			_neig = tvs.GetNeig(side) - 1;
 			if (_neig >= 0)
 			{
-				_third = _fuelAssemblies[_neig].GetGapSize((side + 1 + geometry / 2) % geometry);
+				_third = _fuelAssemblies[_neig].GetGapSize((side + 1 + geometry / 2) % geometry, _time_point);
 			}
 			else
 			{
@@ -186,8 +183,8 @@ void Core::SetCornerGapsForTvs(Assembly &tvs)
 
 		_result = (_first + _second + _third) / 3.;
 		std::pair < size_t, double > t = Rounding(_result);
-		tvs.SetCornerConstants(side, _gapSizeCornerConstant[t.first]);
-		tvs.SetCornerGapSize(side, t.second);
+		tvs.SetCornerConstants(side, _gapSizeCornerConstant[t.first], _time_point);
+		tvs.SetCornerGapSize(side, t.second, _time_point);
 		//			std::cerr << _gapSizeCornerConstant[t.first] << " ";
 		if (isRef)
 			nal3.insert(_gapSizeCornerConstant[t.first]);
@@ -195,7 +192,7 @@ void Core::SetCornerGapsForTvs(Assembly &tvs)
 	//		std::cerr << std::endl;
 }
 
-void Core::SetGapsForTvs(Assembly &tvs)
+void Core::SetGapsForTvs(Assembly &tvs, const size_t _time_point)
 {
 	double _x = 0;
 	double _y = 0;
@@ -213,8 +210,8 @@ void Core::SetGapsForTvs(Assembly &tvs)
 			_neig = tvs.GetNeig(side);
 			if (_neig > 0) {
 				_neig -= 1;
-				_x = tvs.GetCurrentX() - _fuelAssemblies[_neig].GetCurrentX();
-				_y = tvs.GetCurrentY() - _fuelAssemblies[_neig].GetCurrentY();
+				_x = tvs.GetCurrentX(_time_point) - _fuelAssemblies[_neig].GetCurrentX(_time_point);
+				_y = tvs.GetCurrentY(_time_point) - _fuelAssemblies[_neig].GetCurrentY(_time_point);
 				_gapSize = sqrt(_x*_x + _y * _y) - _tvs_step;
 			}
 			else
@@ -222,7 +219,7 @@ void Core::SetGapsForTvs(Assembly &tvs)
 				double angle = M_PI * ((180 - side * 60) % 360) / 180.;
 				//					double debug_1 = tvs.GetShiftX()*cos(angle);
 				//					debug_1 = tvs.GetShiftY()*sin(angle);
-				_gapSize = reflectorDistance - tvs.GetShiftX()*cos(angle) - tvs.GetShiftY()*sin(angle) - nominalGapSize;
+				_gapSize = reflectorDistance - tvs.GetShiftX(_time_point)*cos(angle) - tvs.GetShiftY(_time_point)*sin(angle) - nominalGapSize;
 				isRef = true;
 			}
 
@@ -230,8 +227,8 @@ void Core::SetGapsForTvs(Assembly &tvs)
 			//			SetCorrection(cb, gam, ro5, gs);
 //				std::cerr << _gapSize << std::endl;
 			std::pair < size_t, double > t = Rounding(_gapSize);
-			tvs.SetGapSize(side, t.second);
-			tvs.SetPlaneConstants(side, _gapSizePlaneConstant[t.first]);
+			tvs.SetGapSize(side, t.second, _time_point);
+			tvs.SetPlaneConstants(side, _gapSizePlaneConstant[t.first],_time_point);
 			if (isRef)
 				nal2.insert(_gapSizePlaneConstant[t.first]);
 

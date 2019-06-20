@@ -187,8 +187,8 @@ public:
 	std::pair<size_t, double> Rounding(double _gs) const;
 	VS CyclingConstantFinding(const VS & _id);
 	int FindTheConstant(const std::string & _id) const;
-	void SetCornerGapsForTvs(Assembly &tvs);
-	void SetGapsForTvs(Assembly &tvs);
+	void SetCornerGapsForTvs(Assembly& tvs, const size_t _time_point);
+	void SetGapsForTvs(Assembly& tvs, const size_t _time_point);
 //// Making newdata file
 	// Half part may be repalaced with a cycle, that call all parameters in order
 	void NewdataMaking();
