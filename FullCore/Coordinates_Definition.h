@@ -1,39 +1,6 @@
 #pragma once
 #include <direct.h>
 
-//	double ReturnCoordinatesTvel(short tvel, bool x)
-//	{
-//		//static HINSTANCE hLibrary_163;
-//		HMODULE hLibrary_331;
-//
-//		// ѕри загрузке мен€етс€ текуща€ директори€ и библиотека грузитс€ оттуда, где ее нет.
-//
-//
-//		_chdir(current_library_path);
-//
-//		hLibrary_331 = LoadLibrary(("FR_Coords"));
-//		double(*pFunctionFR) (bool, int);
-//
-//		if (hLibrary_331)
-//		{
-//			(FARPROC &)pFunctionFR = GetProcAddress(hLibrary_331, "RetFrCoord");
-//			if (pFunctionFR == NULL)
-//				std::cerr << "NOT FIND cdefine at Coordinates_definition at ''ReturnCoordinates function\n";
-//			else
-//			{
-//				if (x)
-//					return pFunctionFR(true, tvel);
-//				else
-//					return pFunctionFR(false, tvel);
-//			}
-//		}
-//		else
-//		{
-//			std::cerr << "ERROR OPENING LIBRARY => COORDINATES_DEFINITION.dll\n";
-//		}
-//	}
-//
-//
 
 class Coordinates
 {

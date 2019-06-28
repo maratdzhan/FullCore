@@ -119,20 +119,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Assemblies_Object.cpp" />
     <ClCompile Include="Calculate_core.cpp" />
-    <ClCompile Include="ConsoleColor.cpp" />
     <ClCompile Include="Coordinates_definition.cpp" />
-    <ClCompile Include="Core_Objects_Handler.cpp" />
     <ClCompile Include="Extraction_KQ.cpp" />
     <ClCompile Include="GetParam.cpp" />
-    <ClCompile Include="GraphParameters_163.cpp" />
     <ClCompile Include="kk_calculating.cpp" />
     <ClCompile Include="main_163.cpp" />
     <ClCompile Include="Modifier_Coefficient.cpp" />
-    <ClCompile Include="PaintFullCore.cpp" />
-    <ClCompile Include="PaintSoloTvs.cpp" />
-    <ClCompile Include="StatesList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="163CommonHeader.h" />
@@ -142,9 +135,7 @@
     <ClInclude Include="Extraction.h" />
     <ClInclude Include="File handler files.h" />
     <ClInclude Include="GetParam.h" />
-    <ClInclude Include="GraphParameters_163.h" />
     <ClInclude Include="HashTables.h" />
-    <ClInclude Include="kk_calculating.h" />
     <ClInclude Include="Loading test parameters.h" />
     <ClInclude Include="Newdata.h" />
     <ClInclude Include="Permapar.h" />
