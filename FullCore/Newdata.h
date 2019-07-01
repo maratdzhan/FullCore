@@ -299,9 +299,9 @@ void Core::PermutationForming(std::ostream& ofs)
 	
 	for (int i = 0; i < m_states_number; i++)
 	{
-		for (int j = 0; j < _fa_count; j++)
+		for (const auto & assembly : _fuelAssemblies)
 		{
-			ofs << 1+j + _fa_count * i;
+			ofs << assembly.GetPermparNumber(i);
 			ofs << ",";
 		}
 		ofs << "\n";
@@ -311,9 +311,9 @@ void Core::PermutationForming(std::ostream& ofs)
 	ofs << "NM_CHNG=\n";
 	for (int i = 0; i < m_states_number; i++)
 	{
-		for (int j = 0; j < _fa_count; j++)
+		for (const auto& assembly : _fuelAssemblies)
 		{
-			ofs << 1+j + _fa_count * i;
+			ofs << assembly.GetPermparNumber(i);
 			ofs << ",";
 		}
 		ofs << "\n";

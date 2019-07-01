@@ -31,6 +31,7 @@ void Core::PermparMaking()
 	}
 	catch (std::exception & exc_PPm)
 	{
+		noErrors = 0;
 		std::cerr << __FUNCTION__ << " error: " << exc_PPm.what();
 	}
 
@@ -159,7 +160,7 @@ void Core::AssembliesArrayForming()
 {
 	std::string _assemblyInfo;
 	for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
-		for (const auto assembly : _fuelAssemblies)
+		for (auto assembly : _fuelAssemblies)
 		{
 			size_t _num = assembly.GetTvsNumber();
 			int type = _mapn.at(_num);
@@ -169,8 +170,8 @@ void Core::AssembliesArrayForming()
 				// Search similar mapk[] type
 				if (mapk[0] == type)
 				{
-
-					_assemblyInfo += std::to_string(_num%_fa_count+(_fa_count*_tp)+1) + ",";
+		//			assembly.SetPermparNumber(DefineNumber(_num, _tp), _tp);
+					_assemblyInfo += std::to_string(assembly.GetPermparNumber(_tp)) + ",";
 					FromNumericalVectorToString(_assemblyInfo, mapk, ',', 2, -1);
 
 
@@ -208,4 +209,17 @@ void Core::LibraryIncluding()
 	std::string _c_lib = _pp_library;
 	PathPreparing(_c_lib, 1);
 	toPermpar.push_back("NAMLIB='" + _c_lib + "',");
+}
+
+int Core::DefinePermparNumber(int number, size_t time_point)
+{
+	int result = 0;
+	while (true) {
+		result = number % _fa_count + (_fa_count * time_point) + 1 + number_shifting;
+		if ((result >= 1000 && result <= 1005) || (result >= 3000 && result <= 3005) || (result >= 5000 && result <= 5005))
+			number_shifting++;
+		else
+			return result;
+
+	}
 }

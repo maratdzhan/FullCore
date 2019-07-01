@@ -18,22 +18,10 @@
     <ClCompile Include="main_163.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Calculate_core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Extraction_KQ.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Modifier_Coefficient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="kk_calculating.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GetParam.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Coordinates_definition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -81,6 +81,7 @@ private:
 	VS nal3array;
 	VS nal2_r_array;
 	VS nal3_r_array;
+	int number_shifting; // сдвиг номера в связи с недоступностью номеров 1000-1005, 3000-3005, 5000-5005
 	/////////////////////////////
 
 	std::string fa_library_file;
@@ -93,7 +94,7 @@ private:
 	std::string planePredictor, cornerPredictor;
 	double stepGapValue;
 	double reflectorDistance;
-	int geometry=0;
+	int geometry;
 	bool isInitialized;
 	bool isModifierAccounted;
 	// Classes:
@@ -115,7 +116,7 @@ public:
 		unit_number = fuel_cycle_number = 0;
 		m_states_number=0;
 		noErrors = 0;
-		m_nbippar = m_symmetry = 0;
+		m_nbippar = m_symmetry = 0, number_shifting = 0;
 		m_ireg = 0;
 		maxGapVal = minGapVal = 0;
 		stepGapValue = reflectorDistance = 0;
@@ -179,6 +180,7 @@ public:
 	void AssembliesArrayForming();
 	void ConstantsForming();
 	void LibraryIncluding();
+	int DefinePermparNumber(int number, size_t time_point);
 //// Assemblies handler
 	void CycleSetPlaneGapsForTvs();
 	void CycleSetCornerGapsForTvs();

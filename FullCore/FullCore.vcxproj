@@ -119,11 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Calculate_core.cpp" />
-    <ClCompile Include="Coordinates_definition.cpp" />
-    <ClCompile Include="Extraction_KQ.cpp" />
     <ClCompile Include="GetParam.cpp" />
-    <ClCompile Include="kk_calculating.cpp" />
     <ClCompile Include="main_163.cpp" />
     <ClCompile Include="Modifier_Coefficient.cpp" />
   </ItemGroup>

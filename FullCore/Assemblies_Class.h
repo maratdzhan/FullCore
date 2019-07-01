@@ -15,27 +15,10 @@ public:
 		geometry = 6;
 		neigs.resize(geometry);
 
-		size_t init_value = 35;
-		_current_coordinate_x.resize(init_value);
-		_current_coordinate_y.resize(init_value);
-		gap_size.resize(init_value);
-		corner_gap_size.resize(init_value);
-		c_consts.resize(init_value);
-		p_consts.resize(init_value);
-		shift_x.resize(init_value);
-		shift_y.resize(init_value);
-
-		for (size_t c = 0; c < init_value; c++)
-		{
-			gap_size[c].resize(geometry);
-			corner_gap_size[c].resize(geometry);
-			c_consts[c].resize(geometry);
-			p_consts[c].resize(geometry);
-		}
 
 	}
 
-	void Initialize(double tvs_size, 
+	void Initialize(double tvs_size,
 		double tvs_step, size_t tvs_number)
 	{
 
@@ -47,7 +30,7 @@ public:
 
 	}
 
-	void SetPlaneConstants(size_t _side, const std::string & _p, const size_t _time_point)
+	void SetPlaneConstants(size_t _side, const std::string& _p, const size_t _time_point)
 	{
 		p_consts[_time_point][_side] = _p;
 	}
@@ -127,7 +110,7 @@ public:
 		gap_size[_time_point][_side] = _gapSize;
 	}
 
-	void SetNeigs(const std::vector<int> & _neigs)
+	void SetNeigs(const std::vector<int>& _neigs)
 	{
 		neigs = _neigs;
 	}
@@ -137,7 +120,7 @@ public:
 		try {
 			return neigs.at(_side);
 		}
-		catch (std::exception & sideExc)
+		catch (std::exception& sideExc)
 		{
 			std::cerr << sideExc.what() << " -> WARNING!!!\n>>>\nset neigh to -1\n>>>\n " << __FUNCTION__ << std::endl;
 			return -1;
@@ -149,6 +132,43 @@ public:
 		mapk = mapk_num;
 	}
 
+	void SetPermparNumber(int number, size_t time_point)
+	{
+		permparNumber[time_point] = number;
+	}
+
+	void SetTimePointsQuantity(size_t init_value)
+	{
+		_current_coordinate_x.resize(init_value);
+		_current_coordinate_y.resize(init_value);
+		gap_size.resize(init_value);
+		corner_gap_size.resize(init_value);
+		c_consts.resize(init_value);
+		p_consts.resize(init_value);
+		shift_x.resize(init_value);
+		shift_y.resize(init_value);
+		permparNumber.resize(init_value);
+
+		for (size_t c = 0; c < init_value; c++)
+		{
+			gap_size[c].resize(geometry);
+			corner_gap_size[c].resize(geometry);
+			c_consts[c].resize(geometry);
+			p_consts[c].resize(geometry);
+		}
+	}
+
+	int GetPermparNumber(size_t time_point) const
+	{
+		if (time_point < permparNumber.size())
+			return permparNumber[time_point];
+		else
+		{
+			std::string _v = "wrong time point at ";
+			_v += __FUNCTION__;
+			throw std::invalid_argument(_v);
+		}
+	}
 
 
 private:
@@ -165,4 +185,5 @@ private:
 	std::vector<double> shift_y;
 	std::vector < std::vector<std::string>> c_consts, p_consts;
 	int mapk;
+	std::vector<int> permparNumber;
 };

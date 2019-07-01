@@ -12,8 +12,8 @@ int main()
 	{
 		if (content.IsCalculationInitialized()) {
 			Core CurrentLoad(content);
-			CurrentLoad.NewdataMaking();
 			CurrentLoad.LoadingAssemblies();
+			CurrentLoad.NewdataMaking();
 			CurrentLoad.PermparMaking();
 		}
 	}

@@ -33,6 +33,8 @@ void Core::LoadingAssemblies()
 {
 	
 	_fuelAssemblies.resize(_fa_count);
+
+
 	double x = 0;
 	double y = 0;
 	/// Library handling
@@ -63,13 +65,19 @@ void Core::LoadingAssemblies()
 
 	/// Arbitrary time points amouting algorithm
 	try {
-
 		for (size_t num = 0; num < _fa_count; num++) {
+			_fuelAssemblies[num].SetTimePointsQuantity(accounted_points_number);
 			x = coordinates[num].first;
 			y = coordinates[num].second;
 			_fuelAssemblies[num].Initialize(_tvs_size, _tvs_step, num);
 			_fuelAssemblies[num].SetProjectCoordinates(x, y);
+			for (size_t _tp = 0; _tp < accounted_points_number; _tp++)
+			{
+				_fuelAssemblies[num].SetPermparNumber(DefinePermparNumber(_fuelAssemblies[num].GetTvsNumber(), _tp), _tp);
+			}
 		}
+
+
 
 		size_t time_point = 0;
 		for (size_t i = 0; i < first_coodinate.size(); ++i)
@@ -77,6 +85,9 @@ void Core::LoadingAssemblies()
 			_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i], time_point);
 			if ((i % _fa_count) + 1 == _fa_count) time_point++;
 		}
+
+
+
 
 	/// End of new algorithm
 		std::vector<int> neigs(geometry);
