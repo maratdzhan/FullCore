@@ -160,7 +160,7 @@ void Core::AssembliesArrayForming()
 {
 	std::string _assemblyInfo;
 	for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
-		for (auto assembly : _fuelAssemblies)
+		for (auto & assembly : _fuelAssemblies)
 		{
 			size_t _num = assembly.GetTvsNumber();
 			int type = _mapn.at(_num);
