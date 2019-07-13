@@ -142,12 +142,13 @@ void Core::ReadingGaps()
 			// Get item values
 			gapsString.erase(gapsString.begin());
 			double f_p = 0, s_p = 0;
-			for (const auto & item : gapsString)
+			for (const auto& item : gapsString)
 			{
 				GetParam(f_p, item, 2);
 				GetParam(s_p, item, 3);
 				first_coodinate.push_back(f_p);
 				second_coordinate.push_back(s_p);
+
 			}
 		}
 	}
@@ -392,3 +393,4 @@ void Core::CraftGapsList()
 	else
 		std::cerr << "Wrong input parameters :" << __FUNCTION__ << std::endl;
 }
+

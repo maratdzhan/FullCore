@@ -82,7 +82,13 @@ void Core::LoadingAssemblies()
 		size_t time_point = 0;
 		for (size_t i = 0; i < first_coodinate.size(); ++i)
 		{
-			_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i], time_point);
+			if (_coordinate_system == 1) {
+				_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i], time_point);
+			}
+			else if (_coordinate_system == 2)
+			{
+				_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(coordinates[i % _fa_count].first - first_coodinate[i], coordinates[i % _fa_count].second - second_coordinate[i], time_point);
+			}
 			if ((i % _fa_count) + 1 == _fa_count) time_point++;
 		}
 

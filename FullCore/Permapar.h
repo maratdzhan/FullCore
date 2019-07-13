@@ -215,8 +215,9 @@ int Core::DefinePermparNumber(int number, size_t time_point)
 {
 	int result = 0;
 	while (true) {
-		result = number % _fa_count + (_fa_count * time_point) + 1 + number_shifting;
-		if ((result >= 1000 && result <= 1005) || (result >= 3000 && result <= 3005) || (result >= 5000 && result <= 5005))
+		result = number % _fa_count + (_fa_count * time_point) + 1;
+		if (result >= 1000) result += number_shifting;
+ 		if ((result >= 1000 && result <= 1005) || (result >= 3000 && result <= 3005) || (result >= 5000 && result <= 5005))
 			number_shifting++;
 		else
 			return result;
