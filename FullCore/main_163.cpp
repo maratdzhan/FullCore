@@ -1,6 +1,11 @@
+
+// CT_BLANK = 1 - not rewrite permpar, newdata, out-file
+#define CT_BLANK 0
+
 #include "163CommonHeader.h"
 
 // Replace cout with cerr
+
 
 int main()
 {
@@ -15,6 +20,7 @@ int main()
 			CurrentLoad.LoadingAssemblies();
 			CurrentLoad.NewdataMaking();
 			CurrentLoad.PermparMaking();
+			CurrentLoad.GrabResults();
 		}
 	}
 
@@ -22,4 +28,5 @@ int main()
 	system("pause");
 	return 0;
 }
- 
+
+

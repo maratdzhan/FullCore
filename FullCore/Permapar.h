@@ -27,6 +27,7 @@ void Core::PermparMaking()
 			ToUpperFunct(_s);
 			PermparSP(_s);
 		}
+		if (CT_BLANK) return;
 		WriteToPermpar();
 	}
 	catch (std::exception & exc_PPm)
@@ -87,6 +88,8 @@ int Core::TouchCase(const std::string & _str) const
 
 void Core::WriteToPermpar()
 {
+
+	CreatePermparFile();
 	std::ofstream ofs(permpar_path);
 
 	if (!ofs.is_open())
@@ -170,27 +173,18 @@ void Core::AssembliesArrayForming()
 				// Search similar mapk[] type
 				if (mapk[0] == type)
 				{
-		//			assembly.SetPermparNumber(DefineNumber(_num, _tp), _tp);
 					_assemblyInfo += std::to_string(assembly.GetPermparNumber(_tp)) + ",";
 					FromNumericalVectorToString(_assemblyInfo, mapk, ',', 2, -1);
-
 
 					VS p_value = CyclingConstantFinding(assembly.GetPlaneConstants(_tp));
 					FromStringVectorToString(_assemblyInfo, p_value, ',', 0, -1);
 					VS c_value = CyclingConstantFinding(assembly.GetCornerConstants(_tp));
 					FromStringVectorToString(_assemblyInfo, c_value, ',', 0, -1);
-					// Calculate like (89*0):
-					// Size of planesConstants (6) + cornerConstants (6) +
-					// + [mapkas.size()-1] + 1 (number of fa)
 					_size = 100 - (mapk.size() + assembly.GetCornerConstants(_tp).size()
 						+ assembly.GetPlaneConstants(_tp).size());
 					_assemblyInfo += std::to_string(_size + 1) + "*0,";
 					toPermpar.push_back(_assemblyInfo);
 					_assemblyInfo.clear();
-					// DEBUG
-//					if (_tp > 0 && (toPermpar.at(toPermpar.size() - 1) != toPermpar.at(toPermpar.size() - 164)))
-//						std::cerr << toPermpar.at(toPermpar.size() - 1) << " !=\n " << toPermpar.at(toPermpar.size() - 164) << std::endl << std::endl;
-					//
 					break;
 				}
 			}
@@ -213,14 +207,12 @@ void Core::LibraryIncluding()
 
 int Core::DefinePermparNumber(int number, size_t time_point)
 {
-	int result = 0;
-	while (true) {
-		result = number % _fa_count + (_fa_count * time_point) + 1;
-		if (result >= 1000) result += number_shifting;
- 		if ((result >= 1000 && result <= 1005) || (result >= 3000 && result <= 3005) || (result >= 5000 && result <= 5005))
-			number_shifting++;
-		else
-			return result;
-
-	}
+	int result = 1+(_fa_count * time_point) + number;
+	if (result > 1000) result += 5;
+	if (result > 2000) result += 5;
+	if (result > 3000) result += 5;
+	if (result > 4000) result += 5;
+	if (result > 5000) result += 5;
+	return result;
+	
 }

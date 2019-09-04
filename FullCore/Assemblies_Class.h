@@ -21,13 +21,10 @@ public:
 	void Initialize(double tvs_size,
 		double tvs_step, size_t tvs_number)
 	{
-
 		step = tvs_step;
 		fa_size = tvs_size;
 		_tvs_number = tvs_number;
 		double x = 0, y = 0;
-
-
 	}
 
 	void SetPlaneConstants(size_t _side, const std::string& _p, const size_t _time_point)

@@ -21,7 +21,7 @@ void Core::NewdataMaking()
 	When first parameters array size reach tvs number, program change state (state mean next vector-array)
 	Now call <NewDataForming()>
 	*/
-	if (noErrors == 0) {
+	if (noErrors == 0 && !CT_BLANK) {
 		NewdataForming();
 	}
 }
@@ -190,6 +190,7 @@ void Core::NewdataPathForming()
 		std::cerr << err << " ";
 	newdataPath += "K" + ((fuel_cycle_number < 9 ? "0" : "") + std::to_string(fuel_cycle_number)) + "\\";
 	err = file.CreatePath(newdataPath);
+	unitPath = newdataPath;
 	if (err == 0)
 		std::cerr << err << "\n";
 	newdataPath += "newdata";

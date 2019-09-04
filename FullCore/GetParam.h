@@ -7,6 +7,7 @@
 #include <fstream>
 
 
+
 std::string GetStringParam(const std::string &inputString, size_t number);
 std::string ReturnNumbers(std::string str);
 void ToUpperFunct(std::string & str);

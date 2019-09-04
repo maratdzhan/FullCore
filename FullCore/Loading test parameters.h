@@ -105,6 +105,7 @@ void Core::ReadingMapn(const uint16_t _count)
 void Core::ReadingGaps()
 {
 	try {
+		int ipos = 0;
 		VS gapsString =
 			file.GetLine(m_Compilation.GetFileByName("COORDS.PVM"));
 		ToUpperFunct(gapsString[0]);
@@ -133,24 +134,37 @@ void Core::ReadingGaps()
 				{
 					throw (std::invalid_argument("Unknown gaps data type"));
 				}
-				gapsString.erase(gapsString.begin());
+				ipos++;
 			}
 			else
 			{
 				throw (std::invalid_argument("Unknown coordinate system. Check <COORDS.PVM>\n"));
 			}
 			// Get item values
-			gapsString.erase(gapsString.begin());
 			double f_p = 0, s_p = 0;
+			// old algorithm
+			// ==========================
+/*			gapsString.erase(gapsString.begin());
 			for (const auto& item : gapsString)
 			{
 				GetParam(f_p, item, 2);
 				GetParam(s_p, item, 3);
 				first_coodinate.push_back(f_p);
 				second_coordinate.push_back(s_p);
-
 			}
+*/			// ==========================
+			// new algirithm
+			for (int i=1+ipos; i<(int)gapsString.size();i++)
+			{
+				GetParam(f_p, gapsString[i], 2);
+				GetParam(s_p, gapsString[i], 3);
+				first_coodinate.push_back(f_p);
+				second_coordinate.push_back(s_p);
+			}
+			// ==========================
 		}
+		if (CT_BLANK)
+			GetDebugPVM();
 	}
 	catch (std::exception & gapsExc)
 	{

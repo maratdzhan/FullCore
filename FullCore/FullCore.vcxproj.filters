@@ -59,5 +59,11 @@
     <ClInclude Include="File handler files.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GrabResults.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

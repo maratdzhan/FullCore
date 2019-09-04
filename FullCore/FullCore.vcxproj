@@ -128,9 +128,11 @@
     <ClInclude Include="Assemblies_Calculations.h" />
     <ClInclude Include="Assemblies_Class.h" />
     <ClInclude Include="Coordinates_Definition.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="Extraction.h" />
     <ClInclude Include="File handler files.h" />
     <ClInclude Include="GetParam.h" />
+    <ClInclude Include="GrabResults.h" />
     <ClInclude Include="HashTables.h" />
     <ClInclude Include="Loading test parameters.h" />
     <ClInclude Include="Newdata.h" />

@@ -47,10 +47,10 @@ void Core::LoadingAssemblies()
 		noErrors = 1;
 		return;
 	}
+
 	m_coreCoordinates.NeigArrayInitializing();
 	std::vector<std::pair<double, double>> coordinates = m_coreCoordinates.V_ReturnCoordinatesTvs();
 	// Ключ для данных тутнова;
-
 
 	/// One time point algorithm
 	//for (size_t i = 0; i < _fa_count; ++i)
@@ -78,7 +78,6 @@ void Core::LoadingAssemblies()
 		}
 
 
-
 		size_t time_point = 0;
 		for (size_t i = 0; i < first_coodinate.size(); ++i)
 		{
@@ -92,15 +91,14 @@ void Core::LoadingAssemblies()
 			if ((i % _fa_count) + 1 == _fa_count) time_point++;
 		}
 
-
-
-
 	/// End of new algorithm
 		std::vector<int> neigs(geometry);
 
 		CycleSetNeigsForTvs();
 		CycleSetPlaneGapsForTvs();
 		CycleSetCornerGapsForTvs();
+		
+
 	}
 	catch (std::exception & lfa)
 	{
@@ -121,17 +119,14 @@ std::pair<size_t, double> Core::Rounding(double _gs) const
 	while (j - i >= 2)
 	{
 		k = (j + i) / 2;
+		j = k;
 		if (_gs >= _gapSize[k])
 		{
 			i = k;
 		}
-		else
-		{
-			j = k;
-		}
 		itt++;
 		if (itt > 1000)
-			throw (std::out_of_range("Can't find mathc in ROUNDING()\n"));
+			throw (std::out_of_range("Can't find match in ROUNDING()\n"));
 
 	}
 	return { j ,_gapSize[j] };
@@ -164,7 +159,6 @@ void Core::SetCornerGapsForTvs(Assembly &tvs, const size_t _time_point)
 {
 	double _result = 0;
 	bool isRef = false;
-	//		std::cerr << tvs.GetTvsNumber() + 1 << ". ";;
 	for (size_t side = 0; side < static_cast<size_t>(geometry); side++)
 	{
 		_result = -999;
@@ -202,11 +196,9 @@ void Core::SetCornerGapsForTvs(Assembly &tvs, const size_t _time_point)
 		std::pair < size_t, double > t = Rounding(_result);
 		tvs.SetCornerConstants(side, _gapSizeCornerConstant[t.first], _time_point);
 		tvs.SetCornerGapSize(side, t.second, _time_point);
-		//			std::cerr << _gapSizeCornerConstant[t.first] << " ";
 		if (isRef)
 			nal3.insert(_gapSizeCornerConstant[t.first]);
 	}
-	//		std::cerr << std::endl;
 }
 
 void Core::SetGapsForTvs(Assembly &tvs, const size_t _time_point)
@@ -217,13 +209,11 @@ void Core::SetGapsForTvs(Assembly &tvs, const size_t _time_point)
 	bool isRef = false;
 	double _gapSize = -999;
 
-	// /**/		std::cerr << tvs.GetTvsNumber() << ". ";
-
 	for (auto side = 0; side < geometry; side++)
 	{
 		try {
 			_gapSize = -999;
-			// Х: Текущее Х центра кассета - (определяем соседа (GetNeig()) и для него получаем текущий Х)
+			// Х: Current Х of assembly center - (define neighbor (GetNeig()) and get his current x of center)
 			_neig = tvs.GetNeig(side);
 			if (_neig > 0) {
 				_neig -= 1;
@@ -234,22 +224,21 @@ void Core::SetGapsForTvs(Assembly &tvs, const size_t _time_point)
 			else
 			{
 				double angle = M_PI * ((180 - side * 60) % 360) / 180.;
-				//					double debug_1 = tvs.GetShiftX()*cos(angle);
-				//					debug_1 = tvs.GetShiftY()*sin(angle);
 				_gapSize = reflectorDistance - tvs.GetShiftX(_time_point)*cos(angle) - tvs.GetShiftY(_time_point)*sin(angle) - nominalGapSize;
 				isRef = true;
 			}
 
 			//		if (isModifierAccounted)
 			//			SetCorrection(cb, gam, ro5, gs);
-//				std::cerr << _gapSize << std::endl;
 			std::pair < size_t, double > t = Rounding(_gapSize);
+			// this one may be commented, just for looking
+			gap_sizes.push_back(t.second);
+			//
 			tvs.SetGapSize(side, t.second, _time_point);
 			tvs.SetPlaneConstants(side, _gapSizePlaneConstant[t.first],_time_point);
 			if (isRef)
 				nal2.insert(_gapSizePlaneConstant[t.first]);
 
-			// /**/				std::cerr << _gapSizePlaneConstant[t.first] << " ";
 
 		}
 		catch (std::exception & e_c)
@@ -257,5 +246,4 @@ void Core::SetGapsForTvs(Assembly &tvs, const size_t _time_point)
 			std::cerr << e_c.what() << " at " << __FUNCTION__ << std::endl;
 		}
 	}
-	// /**/		std::cerr << std::endl;
 }
