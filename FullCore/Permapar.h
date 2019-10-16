@@ -1,6 +1,5 @@
 #pragma once
 
-
 void Core::CreatePermparFile()
 {
 	std::string unit_word = "B";
@@ -22,12 +21,14 @@ void Core::PermparMaking()
 		{
 			ToUpperFunct(_i);
 		}
+
 		for (auto & _s : permpar)
 		{
 			ToUpperFunct(_s);
 			PermparSP(_s);
 		}
-		if (CT_BLANK) return;
+		if (CT_BLANK) 
+			return;
 		WriteToPermpar();
 	}
 	catch (std::exception & exc_PPm)
@@ -162,8 +163,10 @@ void Core::Nal3Generating()
 void Core::AssembliesArrayForming()
 {
 	std::string _assemblyInfo;
-	for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
-		for (auto & assembly : _fuelAssemblies)
+	//for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
+	for (size_t _tp = 0; _tp < reloads.size(); _tp++)
+	{
+		for (auto& assembly : _fuelAssemblies)
 		{
 			size_t _num = assembly.GetTvsNumber();
 			int type = _mapn.at(_num);
@@ -173,7 +176,9 @@ void Core::AssembliesArrayForming()
 				// Search similar mapk[] type
 				if (mapk[0] == type)
 				{
+
 					_assemblyInfo += std::to_string(assembly.GetPermparNumber(_tp)) + ",";
+
 					FromNumericalVectorToString(_assemblyInfo, mapk, ',', 2, -1);
 
 					VS p_value = CyclingConstantFinding(assembly.GetPlaneConstants(_tp));
@@ -208,11 +213,11 @@ void Core::LibraryIncluding()
 int Core::DefinePermparNumber(int number, size_t time_point)
 {
 	int result = 1+(_fa_count * time_point) + number;
-	if (result > 1000) result += 5;
-	if (result > 2000) result += 5;
-	if (result > 3000) result += 5;
-	if (result > 4000) result += 5;
-	if (result > 5000) result += 5;
+	//if (result > 1000) result += 5;
+	//if (result > 2000) result += 5;
+	//if (result > 3000) result += 5;
+	//if (result > 4000) result += 5;
+	//if (result > 5000) result += 5;
 	return result;
 	
 }

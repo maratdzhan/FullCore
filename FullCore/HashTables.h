@@ -118,7 +118,6 @@ public:
 	int Get(const std::string & _value) const
 	{
 		return (_constants[GetIndex(MakeHashCode(_value))].Find(_value));
-	
 	}
 
 	void PrintAll()

@@ -260,7 +260,13 @@ public:
 		return m_errors;
 	}
 
-private:
+	void Clear()
+	{
+		m_fa_library_path.clear();
+		m_coordinates.clear();
+		neighbor_array.clear();
+	}
+protected:
 
 	void SetErrors(int _val)
 	{

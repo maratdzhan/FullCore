@@ -16,8 +16,10 @@ void Core::NewdataMaking()
 	Algorithm description:
 	the program read input data with *.con extension. 
 	After the reading for each of vector<string>-arrays calling related method (like GetDensity() for density).
-	In each method for each string program calling method <CoolantParsing()> that get string and send it to <GetPoint()>.
-	In <GetPoint()> method program get vector array from comma-separeted strings, that after added to output parameters array. 
+	In each method for each string program calling method <CoolantParsing()> that get string and send 
+	it to <GetPoint()>.
+	In <GetPoint()> method program get vector array from comma-separeted strings, that after added 
+	to output parameters array. 
 	When first parameters array size reach tvs number, program change state (state mean next vector-array)
 	Now call <NewDataForming()>
 	*/
@@ -25,6 +27,8 @@ void Core::NewdataMaking()
 		NewdataForming();
 	}
 }
+
+
 
 void Core::NewdataPS()
 {
@@ -53,6 +57,7 @@ void Core::NewdataPS()
 	}
 }
 
+
 template<typename T>
 void Core::GetPoints(const std::string& inputString, std::vector<T> & inputVector,int initPos)
 {
@@ -75,22 +80,8 @@ void Core::CoolantParsing(const std::vector<std::string>& inputVector, std::vect
 		GetPoints(str, temporary, 0);			// String written to array
 		if (temporary.size() >= _fa_count)	// Check size -> more/equal or lesser, than _fa_count?
 		{
-			/*			std::vector<double> tail;		// Greater and equal? Write to outputVector
-						if (temporary.size() > _fa_count) // If greater - cute the tail
-						{								// Write tail
-
-							for (int i = _fa_count; i < temporary.size(); ++i)
-								tail.push_back(temporary[i]);
-							temporary.resize(_fa_count);// Change size of array
-						}
-			*/
 			outputVector.push_back(temporary);
 			temporary.clear();
-			/*			if (tail.size() != 0) {
-							for (const auto& item : tail)
-								temporary.push_back(item);
-						}
-			*/
 		}
 	}
 }
@@ -127,7 +118,7 @@ bool Core::_GetParametersFromFile(K & inputCollection, const std::string & _sour
 
 void Core::GetStatesParameters()
 {
-	std::cerr << "Time points --------->" << (_GetParametersFromFile(m_time_points, "TIME_POINTS.CON") ? "OK" : "FAILED") << std::endl;
+//	std::cerr << "Time points --------->" << (_GetParametersFromFile(m_time_points, "TIME_POINTS.CON") ? "OK" : "FAILED") << std::endl;
 	std::cerr << "Xe flags ------------>" << (_GetParametersFromFile(m_xe_flag, "XE_FLAG.CON") ? "OK" : "FAILED") << std::endl;
 	std::cerr << "Sm flag ------------->" << (_GetParametersFromFile(m_sm_flag, "SM_FLAG.CON") ? "OK" : "FAILED") << std::endl;
 	std::cerr << "Dopler flag --------->" << (_GetParametersFromFile(m_dopler_flag, "DOPL_FLAG.CON") ? "OK" : "FAILED") << std::endl;
@@ -179,7 +170,7 @@ void Core::GetBoricAcid()
 
 void Core::NewdataPathForming()
 {
-	std::cerr << "Placing newdata file (1 - NEW FOLDER, 0 - OK, 2 - WRONG PATH):\n";
+	std::cerr << "Placing newdata file (1 - NEW FOLDER, 0 - OK, 2 - WRONG PATH): ";
 	newdataPath = p_workdirectory + "" + p_project_name + "\\";
 	int err = file.CreatePath(newdataPath);
 	if (err == 0)
@@ -188,7 +179,7 @@ void Core::NewdataPathForming()
 	err = file.CreatePath(newdataPath);
 	if (err == 0)
 		std::cerr << err << " ";
-	newdataPath += "K" + ((fuel_cycle_number < 9 ? "0" : "") + std::to_string(fuel_cycle_number)) + "\\";
+	newdataPath += "K" + ((fuel_cycle_number <= 9 ? "0" : "") + std::to_string(fuel_cycle_number)) + "\\";
 	err = file.CreatePath(newdataPath);
 	unitPath = newdataPath;
 	if (err == 0)
@@ -196,29 +187,6 @@ void Core::NewdataPathForming()
 	newdataPath += "newdata";
 }
 
-template<typename K>
-void Core::_WriteToStream(std::ostream& ofs, const K& inputCollection, unsigned int _init_pos, unsigned int _end_pos)
-{
-	for (auto i = _init_pos; i < _end_pos; i++)
-	{
-		ofs << inputCollection[i] << ",";
-	}
-	ofs << std::endl;
-
-}
-
-template<typename K>
-void Core::_Comp_WriteToStream(std::ostream& ofs, const K& inputCollection, unsigned int _init_pos, unsigned int _end_pos)
-{
-
-	for (auto i = _init_pos; i < _end_pos; i++)
-	{
-		_WriteToStream(ofs, inputCollection[i], 0, _fa_count);
-	//	ofs << std::endl;
-	}
-	ofs << std::endl;
-
-}
 
 void Core::GenerateCommonParameters(std::ostream & ofs)
 {
@@ -228,6 +196,7 @@ void Core::GenerateCommonParameters(std::ostream & ofs)
 	ofs << "SIM=" << m_symmetry << ",\n";
 	ofs << "KSLOTR=1" << ",\n";
 }
+
 
 void Core::NewdataForming()
 {
@@ -240,7 +209,7 @@ void Core::NewdataForming()
 	ofs << "time=";
 	_WriteToStream(ofs, m_time_points, 0, accounted_points_number);
 	ofs << "nsos=";
-	for (int i = 0; i < m_states_number; i++)
+	for (int i = 0; i < accounted_points_number; i++)
 		ofs << 1<<",";
 	ofs << std::endl;
 	ofs << "cb=";
@@ -284,7 +253,8 @@ bool Core::CheckInputDataStates()
 		m_igam.size() % accounted_points_number == 0 &&
 		m_xe_flag.size() % accounted_points_number == 0 &&
 		m_sm_flag.size() % accounted_points_number == 0 &&
-		m_dopler_flag.size() % accounted_points_number == 0
+		m_dopler_flag.size() % accounted_points_number == 0 &&
+		m_wud.size() % accounted_points_number == 0
 		)
 		return true;
 
@@ -297,26 +267,59 @@ void Core::PermutationForming(std::ostream& ofs)
 {
 	// There insert MAPN_ADD && MAPN_CHNG
 	ofs << "MAPN_ADD=\n";
-	
-	for (int i = 0; i < m_states_number; i++)
+	int reload = 0;
+	//for (int i = 0; i < m_states_number; i++)
+	/*for (int i = 0; i < accounted_points_number; i++)
 	{
 		for (const auto & assembly : _fuelAssemblies)
 		{
-			ofs << assembly.GetPermparNumber(i);
+			ofs << assembly.GetPermparNumber(parsed_times[i]);
 			ofs << ",";
 		}
 		ofs << "\n";
+	}*/
+	for (int i = _fa_count + 1; i <= _fa_count * permak_max_states_quantity; i++)
+	{
+		ofs << i << ",";
+		if (((i+1 - _fa_count) % 21) == 0) ofs << "\n";
+		
 	}
 
-
-	ofs << "NM_CHNG=\n";
-	for (int i = 0; i < m_states_number; i++)
+	ofs << "\nNM_CHNG=\n";
+	reload = 0;
+	//for (int i = 0; i < m_states_number; i++)
+	for (int i = 0; i < accounted_points_number; i++)
 	{
 		for (const auto& assembly : _fuelAssemblies)
 		{
-			ofs << assembly.GetPermparNumber(i);
+			ofs << assembly.GetPermparNumber(parsed_times[i]);
 			ofs << ",";
 		}
 		ofs << "\n";
 	}
+}
+
+
+template<typename K>
+void Core::_WriteToStream(std::ostream& ofs, const K& inputCollection, unsigned int _init_pos, unsigned int _end_pos)
+{
+	for (auto i = _init_pos; i < _end_pos; i++)
+	{
+		ofs << inputCollection[i] << ",";
+	}
+	ofs << std::endl;
+
+}
+
+template<typename K>
+void Core::_Comp_WriteToStream(std::ostream& ofs, const K& inputCollection, unsigned int _init_pos, unsigned int _end_pos)
+{
+
+	for (auto i = _init_pos; i < _end_pos; i++)
+	{
+		_WriteToStream(ofs, inputCollection[i], 0, _fa_count);
+		//	ofs << std::endl;
+	}
+	ofs << std::endl;
+
 }

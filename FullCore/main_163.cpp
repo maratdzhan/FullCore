@@ -1,29 +1,30 @@
 
 // CT_BLANK = 1 - not rewrite permpar, newdata, out-file
 #define CT_BLANK 0
+#define EXTRACT_RESULTS 1
 
 #include "163CommonHeader.h"
 
-// Replace cout with cerr
-
-
 int main()
 {
-   	CommonParametersHandler handle;
+	CommonParametersHandler handle;
 
-		// Get states list
-		// Start calculating
-	for (const auto & content : handle.FilesList())
+
+	for (const auto& content : handle.GetFilesList())
 	{
-		if (content.IsCalculationInitialized()) {
-			Core CurrentLoad(content);
-			CurrentLoad.LoadingAssemblies();
-			CurrentLoad.NewdataMaking();
-			CurrentLoad.PermparMaking();
-			CurrentLoad.GrabResults();
-		}
-	}
+		if (!content.IsCalculationInitialized())
+			continue;
 
+		Core CurrentLoad(content);
+		
+		
+		CurrentLoad.FileReading();
+		if (CurrentLoad.GetStatMode())
+			CurrentLoad.StatMode();
+		else
+			CurrentLoad.SingleMode();
+
+	}
 
 	system("pause");
 	return 0;

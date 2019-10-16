@@ -18,8 +18,7 @@ public:
 
 	}
 
-	void Initialize(double tvs_size,
-		double tvs_step, size_t tvs_number)
+	void Initialize(double tvs_size, double tvs_step, size_t tvs_number)
 	{
 		step = tvs_step;
 		fa_size = tvs_size;
@@ -129,9 +128,10 @@ public:
 		mapk = mapk_num;
 	}
 
-	void SetPermparNumber(int number, size_t time_point)
+	void SetPermparNumber(int number, /*size_t time_point*/ size_t _state)
 	{
-		permparNumber[time_point] = number;
+	//	permparNumber[time_point] = number;
+		permparNumber[_state] = number;
 	}
 
 	void SetTimePointsQuantity(size_t init_value)

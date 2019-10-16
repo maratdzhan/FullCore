@@ -24,15 +24,15 @@ void Core::GrabOutFile(std::vector<std::string>& kq_str)
 	std::ifstream perm(p_workdirectory + "PERM");
 	if (!perm.is_open()) { std::cerr << __FUNCTION__ << " perm file is not opened. Check folder: " << p_workdirectory << "\n"; return; }
 
-	int cntr = 0;
-	while (1)
-	{
-		getline(perm, outFile);
-		if (cntr == 4) break;
-		cntr++;
-	}
-	outFile = unitPath + outFile;
-	std::cerr << "OUT-File: " << outFile << std::endl;
+	//int cntr = 0;
+	//while (1)
+	//{
+	//	getline(perm, outFile);
+	//	if (cntr == 4) break;
+	//	cntr++;
+	//}
+	//outFile = unitPath + outFile;
+	std::cerr << "Grab OUT-File path: " << outFile << std::endl;
 	perm.close();
 
 	
@@ -64,6 +64,7 @@ void Core::GrabOutFile(std::vector<std::string>& kq_str)
 	std::cerr << "Grab " << kq_str.size() << " points\n";
 
 }
+
 
 
 void Core::KQ_P_String(std::string&str, std::vector<std::string>& output)

@@ -4,6 +4,7 @@
 void Core::FileReading()
 {
 	ReadingParameters();
+	ReadingUnitInfo();
 	ReadingMapn(_fa_count);
 	ReadingGaps();
 	ReadingMapkas();
@@ -12,6 +13,8 @@ void Core::FileReading()
 	ReadingConstants();
 	ReadingBasement();
 	ReadingNewdataParameters();
+	ReadingTimeParameters();
+	ParsingTimeParameters();
 	//	if (key)
 	//		ReadingBunrup();
 }
@@ -25,6 +28,7 @@ void Core::ReadingParameters()
 		std::cout << ">>>\n" << __FUNCTION__ << ":" << std::endl;
 		throw(std::invalid_argument("Empty parameters string\n>>>"));
 	}
+
 	for (const auto & item : parametersStrings)
 	{
 		parametersName _name = file.GetType(GetStringParam(item, 1));
@@ -60,23 +64,57 @@ void Core::ReadingParameters()
 		case (p_workdir):
 			p_workdirectory = GetStringParam(item, 2);
 			break;
-		case (project):
-			p_project_name = GetStringParam(item, 2);
-			break;
-		case (unit):
-			GetParam(unit_number, item, 2);
-			break;
-		case (fuel_cycle):
-			GetParam(fuel_cycle_number, item, 2);
-			break;
 		case (accounted_points):
 			GetParam(accounted_points_number, item, 2);
 			break;
+		case (msq):
+			GetParam(permak_max_states_quantity, item, 2);
+			break;
 		default:
-
 			break;
 		}
 	}
+}
+
+void Core::ReadingUnitInfo()
+{
+	std::ifstream perm(p_workdirectory+"PERM");
+	int cntr = 0;
+	while (1)
+	{
+		getline(perm, outFile);
+		rtrim(outFile);
+		/* new algorithm */
+		if (cntr == 0) {
+			project_path_properties.push_back(outFile);
+		}
+		else if (cntr == 1)
+		{
+			project_path_properties.push_back(outFile);
+			p_project_name = outFile;
+		}
+		else if (cntr == 2) {
+			if (outFile.size() < 2)
+				outFile = "0" + outFile;
+			project_path_properties.push_back("B" + outFile);
+			unit_number = stoi(outFile);
+		}
+		else if (cntr == 3)
+		{
+			if (outFile.size() < 2)
+				outFile = "0" + outFile;
+			project_path_properties.push_back("K" + outFile);
+			fuel_cycle_number = stoi(outFile);
+		}
+		/* end of new algorithm */
+		if (cntr == 4) break;
+		cntr++;
+	}
+	//	outFile = unitPath + outFile;
+	outFile = project_path_properties[0] + project_path_properties[1] + char(92) 
+		+ project_path_properties[2] + char(92) + project_path_properties[3] + char(92) + outFile;
+	std::cerr << "Grab OUT-File path: " << outFile << std::endl;
+	perm.close();
 }
 
 void Core::ReadingMapn(const uint16_t _count)
@@ -105,64 +143,25 @@ void Core::ReadingMapn(const uint16_t _count)
 void Core::ReadingGaps()
 {
 	try {
-		int ipos = 0;
 		VS gapsString =
 			file.GetLine(m_Compilation.GetFileByName("COORDS.PVM"));
 		ToUpperFunct(gapsString[0]);
+
 		if (gapsString.size() <= _fa_count) {
-			throw (std::out_of_range("Not enought gaps data\n"));
+			if (gapsString.size() == 1)
+			{
+				
+				file.ScanDirectoryForFiles(gapsFilesList, gapsString[0]);
+			}
+			else
+				throw (std::out_of_range("Not enought gaps data\n"));
 		}
 		else
 		{
-			// Define coordinate system
-			if (gapsString[0] == "POLAR")
-			{
-				_coordinate_system = 3;
-			}
-			else if (gapsString[0] == "CARTESIAN")
-			{
-				ToUpperFunct(gapsString[1]);
-				if (gapsString[1] == "ABSOLUTE")
-				{
-					_coordinate_system = 1;
-				}
-				else if (gapsString[1] == "SHIFT")
-				{
-					_coordinate_system = 2;
-				}
-				else
-				{
-					throw (std::invalid_argument("Unknown gaps data type"));
-				}
-				ipos++;
-			}
-			else
-			{
-				throw (std::invalid_argument("Unknown coordinate system. Check <COORDS.PVM>\n"));
-			}
-			// Get item values
-			double f_p = 0, s_p = 0;
-			// old algorithm
-			// ==========================
-/*			gapsString.erase(gapsString.begin());
-			for (const auto& item : gapsString)
-			{
-				GetParam(f_p, item, 2);
-				GetParam(s_p, item, 3);
-				first_coodinate.push_back(f_p);
-				second_coordinate.push_back(s_p);
-			}
-*/			// ==========================
-			// new algirithm
-			for (int i=1+ipos; i<(int)gapsString.size();i++)
-			{
-				GetParam(f_p, gapsString[i], 2);
-				GetParam(s_p, gapsString[i], 3);
-				first_coodinate.push_back(f_p);
-				second_coordinate.push_back(s_p);
-			}
-			// ==========================
+			ExtractCoordinates(gapsString);	
 		}
+
+		
 		if (CT_BLANK)
 			GetDebugPVM();
 	}
@@ -170,6 +169,8 @@ void Core::ReadingGaps()
 	{
 		std::cerr << gapsExc.what() << " " << __FUNCTION__ << std::endl;
 	}
+
+	SetStatMode();
 }
 
 void Core::ReadingMapkas()
@@ -405,6 +406,135 @@ void Core::CraftGapsList()
 		}
 	}
 	else
-		std::cerr << "Wrong input parameters :" << __FUNCTION__ << std::endl;
+		std::cerr << "Wrong input parameters: " << __FUNCTION__ << std::endl;
 }
 
+void Core::ReadingTimeParameters()
+{
+	std::cerr << "Time points: ... ";
+
+	try {
+		VS timeStrings = file.GetLine(m_Compilation.GetFileByName("TIME_POINTS.CON"));
+		for (const auto& _str : timeStrings)
+		{
+			std::string _word = GetStringParam(_str, 1);
+			ToUpperFunct(_word);
+			if (_word.find("TIME_POINTS") != -1)
+			{
+				GetPoints(_str, m_time_points, 1);
+			}
+			else if (_word.find("RELOADS") != -1)
+			{
+				GetPoints(_str, reloads, 1);
+			}
+			else {
+				if (!_word.empty())
+					throw("invalid argument " + _word);
+			}
+		}
+		std::cerr << "Ok;\n";
+	}
+	catch (std::exception& time_failed)
+	{
+		std::cerr << "Error;\n";
+		std::cerr << __FUNCTION__ << " " << time_failed.what() << std::endl;
+	}
+}
+
+//// New functions not for reading, but for handling
+
+void Core::SetStatMode()
+{
+	if (gapsFilesList.empty())
+		statMode = false;
+	else
+		statMode = true;
+}
+
+bool Core::GetStatMode() const
+{
+	return statMode;
+}
+
+void Core::ExtractCoordinates(VS & gapsArray)
+{
+	int ipos = 0;
+	
+	// Define coordinate system
+	if (gapsArray[0] == "POLAR")
+		_coordinate_system = 3;
+	else if (gapsArray[0] == "CARTESIAN")
+	{
+		ToUpperFunct(gapsArray[1]);
+		if (gapsArray[1] == "ABSOLUTE")
+			_coordinate_system = 1;
+		else if (gapsArray[1] == "SHIFT")
+			_coordinate_system = 2;
+		else
+		{
+			throw (std::invalid_argument("Unknown gaps data type"));
+		}
+		ipos++;
+	}
+	else
+		throw (std::invalid_argument("Unknown coordinate system. Check <COORDS.PVM>\n"));
+	double f_p = 0, s_p = 0;
+
+	for (int i = 1 + ipos; i < (int)gapsArray.size(); i++)
+	{
+		GetParam(f_p, gapsArray[i], 2);
+		GetParam(s_p, gapsArray[i], 3);
+		first_coodinate.push_back(f_p);
+		second_coordinate.push_back(s_p);
+	}
+}
+
+void Core::Clear()
+{
+	//// Assemblies
+	first_coodinate.clear();
+	second_coordinate.clear();
+	_fuelAssemblies.clear();
+	m_coreCoordinates.Clear();
+
+	//gap_sizes.clear();
+	//// Newdata
+	m_time_points.clear();
+	m_temp.clear();
+	m_gam.clear();
+	m_backl.clear();
+	m_bor.clear();
+	m_itemp.clear();
+	m_igam.clear();
+	m_xe_flag.clear();
+	m_sm_flag.clear();
+	m_dopler_flag.clear();
+	m_wud.clear();
+
+	//// Permpar
+	toPermpar.clear();
+	nal2.clear();
+	nal3.clear();
+	nal2array.clear();
+	nal3.clear();
+
+	//// Others
+	system("cls");
+}
+
+void Core::ParsingTimeParameters()
+{
+	uint16_t reloaded_element = 0;
+	parsed_times.resize(m_time_points.size());
+
+	for (int i = 0; i < (int)m_time_points.size(); i++)
+	{
+		if (reloaded_element<reloads.size() &&
+			m_time_points[i] == reloads[reloaded_element])
+		{
+			reloaded_element++;
+		}
+		parsed_times[i] = (reloaded_element-1);
+	}
+
+}

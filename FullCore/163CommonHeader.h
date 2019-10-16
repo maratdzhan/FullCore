@@ -2,42 +2,22 @@
 
 #define _USE_MATH_DEFINES
 
-
-#include <math.h>
-#include <Windows.h>
-#include <vector>
-//#include <string>
-//#include <iostream>
-#include <iomanip>
-#include <fstream>
-//#include <algorithm>
-#include <cassert>
-#include <filesystem>
-#include <map>
-#include <set>
-
-
-
-
-using VS=std::vector<std::string>;
-using SS=std::set<std::string>;
-
+#include "Including.h"
+#include "EnumList.h"
 #include "GetParam.h"
-
 #include "Coordinates_Definition.h"
-
 #include "Assemblies_Class.h"
-
 #include "HashTables.h"
-
-#include "File handler files.h"
-
+#include "FileHandler.h"
+#include "Calculation.h"
+#include "CommonParametersHandler.h"
 
 
 class Core
 {
-private:
+protected:
 	int noErrors;
+	bool statMode;
 	double _tvs_size;
 	double _tvs_step;
 	double nominalGapSize;
@@ -49,15 +29,18 @@ private:
 	uint8_t _coordinate_system = 0;
 	std::vector<double> first_coodinate;
 	std::vector<double> second_coordinate;
+	SS gapsFilesList;
 	uint8_t accounted_points_number;
 	std::vector<double> gap_sizes;
 	std::string p_workdirectory;
 	std::string p_project_name;
 	uint8_t unit_number;
 	uint8_t fuel_cycle_number;
+	std::string outFile;
+	VS project_path_properties;
+	uint8_t permak_max_states_quantity;
 	// Newdata:
-private:
-	std::vector<int16_t> m_time_points, m_xe_flag, m_sm_flag, m_dopler_flag;;
+	std::vector<int16_t> m_time_points, m_xe_flag, m_sm_flag, m_dopler_flag, reloads, parsed_times;
 	int m_states_number;
 	int m_nbippar;
 	int m_symmetry;
@@ -67,8 +50,8 @@ private:
 	VS newdata_parameters;
 	std::string newdataPath;
 	std::string unitPath;
+	
 	// Permpar:
-private:
 	VS permpar;
 	VS toPermpar;
 	VS constants;
@@ -98,7 +81,7 @@ private:
 	bool isInitialized;
 	bool isModifierAccounted;
 	std::vector<int> numBlock;
-private:
+
 	// Classes:
 	Calculation m_Compilation;
 	Coordinates m_coreCoordinates;
@@ -108,45 +91,18 @@ private:
 	/////////////////////////////
 
 
+
+	
 public:
-	Core(const Calculation& _currentObject)
-	{
-		_tvs_size = _tvs_step = nominalGapSize = 0;
-		_fa_count = _tvel_count = _tveg_count = _node_count = 0;
-		_coordinate_system = 0;
-		unit_number = fuel_cycle_number = 0;
-		m_states_number = 0;
-		noErrors = 0;
-		m_nbippar = m_symmetry = 0;
-		m_ireg = 0;
-		maxGapVal = minGapVal = 0;
-		stepGapValue = reflectorDistance = 0;
-		geometry = 6;
-		accounted_points_number = 0;
-		isInitialized = _currentObject.IsCalculationInitialized();
-		isModifierAccounted = true;
-		OutSchemeElementInitializing();
-		if (_currentObject.IsCalculationInitialized()) {
-			try {
-				std::cout << "===============\nHandling begin:"
-					<< _currentObject.GetTestName() << std::endl;
-				m_Compilation = { _currentObject.List() };
-				m_Compilation.SetFilesNames(_currentObject.GetFilesNames());
-				m_Compilation.SetTestName(_currentObject.GetTestName());
-				m_Compilation.SetInitializing();
-				m_Compilation.CopyPathsMap(_currentObject.PathsMap());
-				FileReading();
-			}
-			catch (std::exception& Core_constructor_exception)
-			{
-				std::cerr << Core_constructor_exception.what();
-			}
-		}
-	}
+	//// Modes && Initializing
+	Core(const Calculation& _currentObject);
+	void StatMode();
+	void SingleMode();
+	void Clear();
 
 	//// Reading test input files
-public:
 	void FileReading();
+	void ReadingUnitInfo();
 	void ReadingParameters();
 	void ReadingMapn(const uint16_t _count);
 	void ReadingGaps();
@@ -156,6 +112,10 @@ public:
 	void ReadingPermpar();
 	void ReadingConstants();
 	void ReadingNewdataParameters();
+	void ReadingTimeParameters();
+	void ParsingTimeParameters();
+	void SetStatMode();
+	bool GetStatMode() const;
 	template<typename K>
 	void _WriteToStream(std::ostream& ofs, const K& inputCollection, unsigned int _init_pos, unsigned int _end_pos);
 	template<typename K>
@@ -163,6 +123,8 @@ public:
 	template<typename K>
 	bool _GetParametersFromFile(K& inputCollection, const std::string& file);
 	void GetDebugPVM();
+	void ExtractCoordinates(VS& gapsArray);
+
 	//// Readed files handling
 	void ListHandle(const std::string& inputString);
 	void GapsListParameters(uint8_t _parameter, std::string& _value);
@@ -220,7 +182,92 @@ public:
 };
 
 
-#include "Loading test parameters.h"
+Core::Core(const Calculation& _currentObject)
+{
+	accounted_points_number = 0;
+	fuel_cycle_number = 0;
+	isInitialized = _currentObject.IsCalculationInitialized();
+	isModifierAccounted = true;
+	statMode = false;
+	geometry = 6;
+	m_ireg = 0;
+	m_nbippar = 0;
+	m_states_number = 0;
+	m_symmetry = 0;
+	maxGapVal = 0;
+	minGapVal = 0;
+	noErrors = 0;
+	nominalGapSize = 0;
+	permak_max_states_quantity = 0;
+	reflectorDistance = 0;
+	stepGapValue = 0;
+	unit_number = 0;
+
+	_coordinate_system = 0;
+	_fa_count = 0;
+	_node_count = 0;
+	_tvel_count = 0;
+	_tveg_count = 0;
+	_tvs_size = 0;
+	_tvs_step = 0;
+
+
+	OutSchemeElementInitializing();
+
+	if (_currentObject.IsCalculationInitialized()) {
+		try {
+			std::cout << "===============\nHandling begin:"
+				<< _currentObject.GetTestName() << std::endl;
+			m_Compilation = { _currentObject.List() };
+			m_Compilation.SetFilesNames(_currentObject.GetFilesNames());
+			m_Compilation.SetTestName(_currentObject.GetTestName());
+			m_Compilation.SetInitializing();
+			m_Compilation.CopyPathsMap(_currentObject.PathsMap());
+		}
+		catch (std::exception& Core_constructor_exception)
+		{
+			std::cerr << Core_constructor_exception.what();
+		}
+	}
+}
+
+
+void Core::StatMode()
+{
+	bool first = true;
+	//// Prepare gaps in cycle and run < single state mode >
+	for (const auto& item : gapsFilesList) {
+		VS gapsStrings = file.GetLine(item);
+		ExtractCoordinates(gapsStrings);
+
+		LoadingAssemblies();
+		if (first) {
+			NewdataMaking();
+			first = false;
+		}
+		PermparMaking();
+
+		if (GetStatMode()) {
+			std::cerr << ">>>>>> Waiting for PERMAK...\n";
+			system("pause");
+		}
+		GrabResults();
+		Clear();
+	}
+}
+
+
+
+void Core::SingleMode()
+{
+	LoadingAssemblies();
+	NewdataMaking();
+	PermparMaking();
+	GrabResults();
+}
+
+
+#include "LoadingTestParameters.h"
 #include "Permapar.h"
 #include "Assemblies_Calculations.h"
 #include "Newdata.h"

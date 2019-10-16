@@ -77,6 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -127,14 +128,20 @@
     <ClInclude Include="163CommonHeader.h" />
     <ClInclude Include="Assemblies_Calculations.h" />
     <ClInclude Include="Assemblies_Class.h" />
+    <ClInclude Include="Calculation.h" />
+    <ClInclude Include="CommonParametersHandler.h">
+      <DeploymentContent>true</DeploymentContent>
+    </ClInclude>
     <ClInclude Include="Coordinates_Definition.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="EnumList.h" />
     <ClInclude Include="Extraction.h" />
-    <ClInclude Include="File handler files.h" />
+    <ClInclude Include="FileHandler.h" />
     <ClInclude Include="GetParam.h" />
     <ClInclude Include="GrabResults.h" />
     <ClInclude Include="HashTables.h" />
-    <ClInclude Include="Loading test parameters.h" />
+    <ClInclude Include="Including.h" />
+    <ClInclude Include="LoadingTestParameters.h" />
     <ClInclude Include="Newdata.h" />
     <ClInclude Include="Permapar.h" />
   </ItemGroup>

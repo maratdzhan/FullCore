@@ -49,7 +49,8 @@ std::string GetStringParam(const std::string &inputString, size_t number)
 {
 	std::string resultString;
 	size_t currentNumber = 1;
-
+	if (number < 1)
+		throw ("wrong index at " + inputString);
 	bool breaking = false;
 	try {
 		for (unsigned int pos = 0; pos < inputString.size(); pos++)
@@ -78,7 +79,7 @@ std::string GetStringParam(const std::string &inputString, size_t number)
 	}
 	catch (std::exception & exc)
 	{
-		std::cerr << exc.what() << std::endl;
+		std::cerr << __FUNCTION__ << " " << exc.what() << std::endl;
 	}
 	return ("ERROR -> GetStringParam -> " + inputString);
 }
@@ -174,3 +175,4 @@ void DebugWriteToFile(std::vector<std::vector<double>>input)
 		}
 	}
 }
+
