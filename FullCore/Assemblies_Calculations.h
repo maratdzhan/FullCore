@@ -3,9 +3,7 @@
 
 void Core::LoadingAssemblies()
 {
-
 	_fuelAssemblies.resize(_fa_count);
-
 
 	double x = 0;
 	double y = 0;
@@ -15,50 +13,38 @@ void Core::LoadingAssemblies()
 	m_coreCoordinates.SetSize(_fa_count); // Assemblies quantity
 	m_coreCoordinates.GetTvsCoordinates(_tvs_step); // Get project assemblies x,y-position
 	
-	/*/// BAD
-	if (m_coreCoordinates.GetErrors()) {
-		noErrors = 1;
-		return;
-	}
-	/// BAD*/
 
 	m_coreCoordinates.NeigArrayInitializing(); // Just initializing with values
 	std::vector<std::pair<double, double>> coordinates = m_coreCoordinates.V_ReturnCoordinatesTvs(); // Transfer coordinates. WHY?
-	// Ключ для данных тутнова;
 
 	try {
+		//// PROJECT
 		for (size_t num = 0; num < _fa_count; num++) {
 			//
-		//	_fuelAssemblies[num].SetTimePointsQuantity(accounted_points_number); // There is initializing with time-points values
 			_fuelAssemblies[num].SetTimePointsQuantity(permak_max_states_quantity); // !!! NEW
 			x = coordinates[num].first; // init project coord-x
 			y = coordinates[num].second; // init project coord-y
 			_fuelAssemblies[num].Initialize(_tvs_size, _tvs_step, num); // Init tvs-size, tvs-step, tvs-number
-			_fuelAssemblies[num].SetProjectCoordinates(x, y); // set project coordf
-			//for (size_t _tp = 0; _tp < accounted_points_number; _tp++) // Set permpar number for all time points
+			_fuelAssemblies[num].SetProjectCoordinates(x, y); // set project coord
+
 			for (size_t _tp = 0; _tp < permak_max_states_quantity; _tp++)
-			{
 				_fuelAssemblies[num].SetPermparNumber(DefinePermparNumber(_fuelAssemblies[num].GetTvsNumber(), _tp), _tp);
-			}
+	
 		}
 
-	//	size_t time_point = 0;
+		//// FACT
 		size_t _state = 0;
 		for (size_t i = 0; i < first_coodinate.size(); ++i)
 		{
 			if (_coordinate_system == 1)
-				//		_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i], time_point);
 				_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i], _state);
 			else if (_coordinate_system == 2)
-				//		_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(coordinates[i % _fa_count].first - first_coodinate[i], coordinates[i % _fa_count].second - second_coordinate[i], time_point);
 				_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(coordinates[i % _fa_count].first - first_coodinate[i], coordinates[i % _fa_count].second - second_coordinate[i], _state);
-			//if ((i % _fa_count) + 1 == _fa_count) time_point++;
 			if ((i % _fa_count) + 1 == _fa_count) _state++;
 		}
 
-		/// End of new algorithm
-		std::vector<int> neigs(geometry);
 
+		//std::vector<int> neigs(geometry);
 		CycleSetNeigsForTvs(); //Set neigs
 		CycleSetPlaneGapsForTvs(); // Set plane constants for all states (time_points)
 		CycleSetCornerGapsForTvs(); // Set corner constants for all states (time_point)
@@ -72,7 +58,6 @@ void Core::LoadingAssemblies()
 
 void Core::CycleSetPlaneGapsForTvs()
 {
-//	for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
 	for (size_t _tp = 0; _tp < permak_max_states_quantity; _tp++) {
 		for (auto& tvs : _fuelAssemblies)
 		{
@@ -106,18 +91,18 @@ std::pair<size_t, double> Core::Rounding(double _gs) const
 	size_t j = _gapSize.size();
 	size_t k = 0;
 	int itt = 0;
-	_gs *= 100;
-	static_cast<int>(_gs);
-	_gs = (_gs - 0.02) / 100.;
+	int gsz = _gs * 100-2;
+	_gs = (gsz/100.);
 
 	while (j - i >= 2)
 	{
 		k = (j + i) / 2;
-		j = k;
+
 		if (_gs >= _gapSize[k])
-		{
 			i = k;
-		}
+		else
+			j = k;
+
 		itt++;
 		if (itt > 1000)
 			throw (std::out_of_range("Can't find match in ROUNDING()\n"));
@@ -216,8 +201,6 @@ void Core::SetGapsForTvs(Assembly &tvs, const size_t /*_time_point*/ _state)
 			_neig = tvs.GetNeig(side);
 			if (_neig > 0) {
 				_neig -= 1;
-				//_x = tvs.GetCurrentX(_time_point) - _fuelAssemblies[_neig].GetCurrentX(_time_point);
-				//_y = tvs.GetCurrentY(_time_point) - _fuelAssemblies[_neig].GetCurrentY(_time_point);
 				_x = tvs.GetCurrentX(_state) - _fuelAssemblies[_neig].GetCurrentX(_state);
 				_y = tvs.GetCurrentY(_state) - _fuelAssemblies[_neig].GetCurrentY(_state);
 				_gapSize = sqrt(_x*_x + _y * _y) - _tvs_step;
@@ -225,24 +208,18 @@ void Core::SetGapsForTvs(Assembly &tvs, const size_t /*_time_point*/ _state)
 			else
 			{
 				double angle = M_PI * ((180 - side * 60) % 360) / 180.;
-				//_gapSize = reflectorDistance - tvs.GetShiftX(_time_point)*cos(angle) - tvs.GetShiftY(_time_point)*sin(angle) - nominalGapSize;
-				_gapSize = reflectorDistance - tvs.GetShiftX(_state) * cos(angle) - tvs.GetShiftY(_state) * sin(angle) - nominalGapSize;
+				_gapSize = reflectorDistance - tvs.GetShiftX(_state) * cos(angle) 
+					- tvs.GetShiftY(_state) * sin(angle) - nominalGapSize;
 				isRef = true;
 			}
 
-			//		if (isModifierAccounted)
-			//			SetCorrection(cb, gam, ro5, gs);
+	//		if (isModifierAccounted)
+	//			SetCorrection(cb, gam, ro5, gs);
 			std::pair < size_t, double > t = Rounding(_gapSize);
-			// this one may be commented, just for looking
-			//gap_sizes.push_back(t.second);
-			//
-			//tvs.SetGapSize(side, t.second, _time_point);
-			//tvs.SetPlaneConstants(side, _gapSizePlaneConstant[t.first], _time_point);
 			tvs.SetGapSize(side, t.second, _state);
 			tvs.SetPlaneConstants(side, _gapSizePlaneConstant[t.first], _state);
 			if (isRef)
 				nal2.insert(_gapSizePlaneConstant[t.first]);
-
 
 		}
 		catch (std::exception & e_c)
@@ -250,4 +227,5 @@ void Core::SetGapsForTvs(Assembly &tvs, const size_t /*_time_point*/ _state)
 			std::cerr << e_c.what() << " at " << __FUNCTION__ << std::endl;
 		}
 	}
+
 }

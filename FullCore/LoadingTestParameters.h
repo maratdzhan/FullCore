@@ -491,6 +491,9 @@ void Core::ExtractCoordinates(VS & gapsArray)
 
 void Core::Clear()
 {
+
+	_fuelAssemblies[0].PrintGaps();
+
 	//// Assemblies
 	first_coodinate.clear();
 	second_coordinate.clear();
@@ -515,11 +518,11 @@ void Core::Clear()
 	toPermpar.clear();
 	nal2.clear();
 	nal3.clear();
-	nal2array.clear();
-	nal3.clear();
+	//nal2array.clear();
+	//nal3array.clear();
 
 	//// Others
-	system("cls");
+ 	system("cls");
 }
 
 void Core::ParsingTimeParameters()

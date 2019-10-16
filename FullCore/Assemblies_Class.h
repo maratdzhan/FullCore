@@ -128,9 +128,8 @@ public:
 		mapk = mapk_num;
 	}
 
-	void SetPermparNumber(int number, /*size_t time_point*/ size_t _state)
+	void SetPermparNumber(int number, size_t _state)
 	{
-	//	permparNumber[time_point] = number;
 		permparNumber[_state] = number;
 	}
 
@@ -167,6 +166,17 @@ public:
 		}
 	}
 
+	void PrintGaps() const
+	{
+		std::cerr << "Shift: " << shift_x[0] << "; " << shift_y[0] << "\n";
+		for (const auto& item : gap_size)
+		{
+			std::cerr << "\n>> ";
+			for (const auto& subitem : item)
+				std::cerr << subitem << " ";
+		}
+		std::cerr << " \n";
+	}
 
 private:
 	double step, fa_size;
@@ -184,3 +194,4 @@ private:
 	int mapk;
 	std::vector<int> permparNumber;
 };
+
