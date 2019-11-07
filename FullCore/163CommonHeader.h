@@ -52,6 +52,7 @@ protected:
 	std::string unitPath;
 	
 	// Permpar:
+	VS _mapkasArray;
 	VS permpar;
 	VS toPermpar;
 	VS constants;
@@ -124,6 +125,8 @@ public:
 	bool _GetParametersFromFile(K& inputCollection, const std::string& file);
 	void GetDebugPVM();
 	void ExtractCoordinates(VS& gapsArray);
+	double ExtractRo5(int _const_number);
+	int GetStateFromTime(int _time) const;
 
 	//// Readed files handling
 	void ListHandle(const std::string& inputString);
@@ -142,7 +145,10 @@ public:
 	void ConstantsForming();
 	void LibraryIncluding();
 	int DefinePermparNumber(int number, size_t time_point);
+	void BuildMapkas(Assembly& tvs, const size_t _time_point);
 	//// Assemblies handler
+	void AssembliesInitialize(std::vector<std::pair<double, double>> & coordinates);
+	void AssembliesShiftings(std::vector<std::pair<double, double>> & coordinates);
 	void CycleSetPlaneGapsForTvs();
 	void CycleSetCornerGapsForTvs();
 	void CycleSetNeigsForTvs();
@@ -151,7 +157,14 @@ public:
 	VS CyclingConstantFinding(const VS& _id);
 	int FindTheConstant(const std::string& _id) const;
 	void SetCornerGapsForTvs(Assembly& tvs, const size_t _time_point);
-	void SetGapsForTvs(Assembly& tvs, const size_t _time_point);
+	void SetPlaneGapsForTvs(Assembly& tvs, const size_t _time_point);
+	void SetAssemblyGapsFinal();
+	double SetCorrection(double cb, double gam, double ro5, double gs);
+	void SetAdditionalAttributes(Assembly& tvs);
+	void RebuildGaps(Assembly& tvs, const size_t _time_point);
+	void SetEnrichment(Assembly& tvs);
+	void SetNalArrays(Assembly& tvs, const size_t _state);
+	
 	//// Making newdata file
 		// Half part may be repalaced with a cycle, that call all parameters in order
 	void NewdataMaking();
@@ -199,7 +212,7 @@ Core::Core(const Calculation& _currentObject)
 	noErrors = 0;
 	nominalGapSize = 0;
 	permak_max_states_quantity = 0;
-	reflectorDistance = 0;
+	reflectorDistance = 4.0;
 	stepGapValue = 0;
 	unit_number = 0;
 
@@ -232,6 +245,7 @@ Core::Core(const Calculation& _currentObject)
 }
 
 
+
 void Core::StatMode()
 {
 	bool first = true;
@@ -245,6 +259,7 @@ void Core::StatMode()
 			NewdataMaking();
 			first = false;
 		}
+		SetAssemblyGapsFinal();
 		PermparMaking();
 
 		if (GetStatMode()) {
@@ -256,8 +271,6 @@ void Core::StatMode()
 	}
 }
 
-
-
 void Core::SingleMode()
 {
 	LoadingAssemblies();
@@ -268,8 +281,10 @@ void Core::SingleMode()
 
 
 #include "LoadingTestParameters.h"
+#include "Modifier_coefficient.h"
 #include "Permapar.h"
 #include "Assemblies_Calculations.h"
 #include "Newdata.h"
 #include "GrabResults.h"
 #include "Debug.h"
+

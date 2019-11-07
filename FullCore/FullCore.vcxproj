@@ -142,6 +142,7 @@
     <ClInclude Include="HashTables.h" />
     <ClInclude Include="Including.h" />
     <ClInclude Include="LoadingTestParameters.h" />
+    <ClInclude Include="Modifier_coefficient.h" />
     <ClInclude Include="Newdata.h" />
     <ClInclude Include="Permapar.h" />
   </ItemGroup>

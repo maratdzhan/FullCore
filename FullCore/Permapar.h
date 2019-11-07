@@ -120,12 +120,14 @@ void Core::Nal2Generating()
 	std::string _fs;
 	std::string _c = ",";
 	toPermpar.push_back("NAL2=");
+
 	for (const auto & _const : nal2)
 	{
 		for (const auto & _ref : nal2_r_array)
 		{
 			std::string  const_id = std::to_string(FindTheConstant(_const));
-			_fs = const_id + _c + _ref + _c + const_id + _c;
+			_fs = const_id + _c + _ref + _c + const_id + _c; // 22.10
+			//_fs = const_id + _c + _ref + _c + _ref + _c; 
 			toPermpar.push_back(_fs);
 			_fs.clear();
 		}
@@ -146,9 +148,11 @@ void Core::Nal3Generating()
 		for (const auto & _ref : nal3_r_array)
 		{
 			std::string  const_id = std::to_string(FindTheConstant(_const));
-			_fs = const_id + _c + _ref + _c + _ref + _c + const_id + _c;
+			_fs = const_id + _c + _ref + _c + _ref + _c + const_id + _c; // 22.10
+			//_fs = const_id + _c + _ref + _c + _ref + _c + _ref+ _c;
 			toPermpar.push_back(_fs);
-			_fs = const_id + _c + const_id + _c + _ref + _c + const_id + _c;
+			_fs = const_id + _c + const_id + _c + _ref + _c + const_id + _c; // 22.10
+			//_fs = const_id + _c + const_id + _c + _ref + _c + _ref+ _c;
 			toPermpar.push_back(_fs);
 			_fs.clear();
 		}
@@ -163,38 +167,8 @@ void Core::Nal3Generating()
 void Core::AssembliesArrayForming()
 {
 	std::string _assemblyInfo;
-	//for (size_t _tp = 0; _tp < accounted_points_number; _tp++) {
-	for (size_t _tp = 0; _tp < reloads.size(); _tp++)
-	{
-		for (auto& assembly : _fuelAssemblies)
-		{
-			size_t _num = assembly.GetTvsNumber();
-			int type = _mapn.at(_num);
-			size_t _size = 0;
-			for (const auto& mapk : mapkas)
-			{
-				// Search similar mapk[] type
-				if (mapk[0] == type)
-				{
-
-					_assemblyInfo += std::to_string(assembly.GetPermparNumber(_tp)) + ",";
-
-					FromNumericalVectorToString(_assemblyInfo, mapk, ',', 2, -1);
-
-					VS p_value = CyclingConstantFinding(assembly.GetPlaneConstants(_tp));
-					FromStringVectorToString(_assemblyInfo, p_value, ',', 0, -1);
-					VS c_value = CyclingConstantFinding(assembly.GetCornerConstants(_tp));
-					FromStringVectorToString(_assemblyInfo, c_value, ',', 0, -1);
-					_size = 100 - (mapk.size() + assembly.GetCornerConstants(_tp).size()
-						+ assembly.GetPlaneConstants(_tp).size());
-					_assemblyInfo += std::to_string(_size + 1) + "*0,";
-					toPermpar.push_back(_assemblyInfo);
-					_assemblyInfo.clear();
-					break;
-				}
-			}
-		}
-	}
+	for (const auto& _assemblyInfo : _mapkasArray)
+		toPermpar.push_back(_assemblyInfo);
 }
 
 void Core::ConstantsForming()
@@ -221,3 +195,4 @@ int Core::DefinePermparNumber(int number, size_t time_point)
 	return result;
 	
 }
+

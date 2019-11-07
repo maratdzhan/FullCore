@@ -14,11 +14,14 @@ public:
 		fa_size = 0;
 		geometry = 6;
 		neigs.resize(geometry);
-
-
+		boric.resize(geometry);
+		ro5.resize(geometry);
+		corner_ro5.resize(geometry);
+		fuelTypeNumber = 0;
+		isRef.resize(geometry);
 	}
 
-	void Initialize(double tvs_size, double tvs_step, size_t tvs_number)
+	void InitializeParameters(double tvs_size, double tvs_step, size_t tvs_number)
 	{
 		step = tvs_step;
 		fa_size = tvs_size;
@@ -67,9 +70,14 @@ public:
 		return _current_coordinate_y[_time_point];
 	}
 
-	double GetGapSize(const size_t _side, const size_t _time_point) const
+	double GetPlaneGapSize(const size_t _side, const size_t _time_point) const
 	{
 		return gap_size[_time_point][_side];
+	}
+
+	double GetCornerGapSize(const size_t _side, const size_t _time_point) const
+	{
+		return corner_gap_size[_time_point][_side];
 	}
 
 	void SetCornerGapSize(const size_t _side, const double _gap_size, const size_t _time_point)
@@ -101,7 +109,7 @@ public:
 		SetShift(_time_point);
 	}
 
-	void SetGapSize(const size_t _side, const double _gapSize, const size_t _time_point)
+	void SetPlaneGapSize(const size_t _side, const double _gapSize, const size_t _time_point)
 	{
 		gap_size[_time_point][_side] = _gapSize;
 	}
@@ -166,7 +174,7 @@ public:
 		}
 	}
 
-	void PrintGaps() const
+	void LPrintGaps() const
 	{
 		std::cerr << "Shift: " << shift_x[0] << "; " << shift_y[0] << "\n";
 		for (const auto& item : gap_size)
@@ -176,6 +184,56 @@ public:
 				std::cerr << subitem << " ";
 		}
 		std::cerr << " \n";
+	}
+
+	void SetRo5(double _value, int _side)
+	{
+		ro5[_side]=_value;
+	}
+
+	double GetRo5(int side) const
+	{
+		return ro5[side];
+	}
+
+	void SetCornerRo5(double _value, int _side)
+	{
+		corner_ro5[_side] = _value;
+	}
+
+	double GetCornerRo5(int _side)
+	{
+		return corner_ro5[_side];
+	}
+
+	void SetBoric(double value, int _state)
+	{
+		boric[_state] = value;
+	}
+
+	double GetBoric(int _state) const
+	{
+		return boric[_state];
+	}
+
+	void SetFuelTypeNumber(int _value)
+	{
+		fuelTypeNumber = _value;
+	}
+
+	int GetFuelTypeNumber() const
+	{
+		return fuelTypeNumber;
+	}
+
+	void SetRef(bool _isRef, int _side)
+	{
+		isRef[_side] = true;
+	}
+
+	bool GetRef(int _side) const
+	{
+		return isRef[_side];
 	}
 
 private:
@@ -193,5 +251,10 @@ private:
 	std::vector < std::vector<std::string>> c_consts, p_consts;
 	int mapk;
 	std::vector<int> permparNumber;
+	std::vector<double> ro5;
+	std::vector<double> corner_ro5;
+	std::vector<double> boric;
+	int fuelTypeNumber;
+	std::vector<bool >isRef;
 };
 

@@ -492,7 +492,6 @@ void Core::ExtractCoordinates(VS & gapsArray)
 void Core::Clear()
 {
 
-	_fuelAssemblies[0].PrintGaps();
 
 	//// Assemblies
 	first_coodinate.clear();
@@ -502,11 +501,11 @@ void Core::Clear()
 
 	//gap_sizes.clear();
 	//// Newdata
-	m_time_points.clear();
+//	m_time_points.clear();
 	m_temp.clear();
 	m_gam.clear();
 	m_backl.clear();
-	m_bor.clear();
+//	m_bor.clear();
 	m_itemp.clear();
 	m_igam.clear();
 	m_xe_flag.clear();
@@ -540,4 +539,21 @@ void Core::ParsingTimeParameters()
 		parsed_times[i] = (reloaded_element-1);
 	}
 
+}
+
+int Core::GetStateFromTime(int _time) const
+{
+	int lower = 0, upper = m_time_points.size(), mid = 0;
+	while (m_time_points[mid]!=_time)
+	{
+		mid = (lower + upper) / 2;
+		if (_time <= m_time_points[mid])
+			upper = mid;
+		else
+			lower = mid;
+
+		
+	}
+
+	return mid;
 }

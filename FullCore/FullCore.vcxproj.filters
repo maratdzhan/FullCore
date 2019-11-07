@@ -77,5 +77,8 @@
     <ClInclude Include="LoadingTestParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Modifier_coefficient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
