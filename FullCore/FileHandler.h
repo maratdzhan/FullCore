@@ -144,7 +144,17 @@ newdataParameters FileHandler::GetNewdataType(const std::string& _parameterName)
 
 void FileHandler::ScanDirectoryForFiles(SS & inputArray, const std::string& _dir)
 {
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(_dir)) {
-		inputArray.insert((entry.path().string()));
+	try {
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(_dir)) {
+			inputArray.insert((entry.path().string()));
+		}
 	}
+	catch (std::exception & excp)
+	{
+		system("cls");
+		std::cerr<< "ERROR FOUNDED: ";
+		std::cerr << excp.what();
+		system("pause");
+	}
+
 }

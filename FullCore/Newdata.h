@@ -290,10 +290,17 @@ void Core::PermutationForming(std::ostream& ofs)
 	//for (int i = 0; i < m_states_number; i++)
 	for (int i = 0; i < accounted_points_number; i++)
 	{
-		for (const auto& assembly : _fuelAssemblies)
+		if (i == 0)
 		{
-			ofs << assembly.GetPermparNumber(parsed_times[i]);
-			ofs << ",";
+			for (int i = 0; i < _fa_count; i++)
+				ofs << 0 << ",";
+		}
+		else {
+			for (const auto& assembly : _fuelAssemblies)
+			{
+				ofs << assembly.GetPermparNumber(parsed_times[i])-_fa_count;
+				ofs << ",";
+			}
 		}
 		ofs << "\n";
 	}

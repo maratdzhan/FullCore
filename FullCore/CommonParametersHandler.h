@@ -4,6 +4,7 @@ class CommonParametersHandler
 {
 public:
 	CommonParametersHandler();
+	CommonParametersHandler(bool isBlank);
 
 	void FilesListCheck();
 	void FileListInitialize();
@@ -12,9 +13,9 @@ public:
 	void GetTestsName();
 	void GrabFilesList(const std::string& folder);
 	void InnerStructInitialize();
+	std::string GetInnerStruct(std::string &folderName);
 
-
-private:
+protected:
 	FileHandler fileReader;
 	std::string innerStruct_bin;
 	std::string innerStruct_data;
@@ -38,6 +39,11 @@ CommonParametersHandler::CommonParametersHandler() {
 	GetTestsName();
 	FilesListCheck();
 
+}
+
+CommonParametersHandler::CommonParametersHandler(bool isBlank)
+{
+	InnerStructInitialize();
 }
 
 void CommonParametersHandler::InnerStructInitialize()
@@ -158,4 +164,31 @@ void CommonParametersHandler::GrabFilesList(const std::string& folder)
 std::vector<Calculation> CommonParametersHandler::GetFilesList() const
 {
 	return m_relativeFileList;
+}
+
+std::string CommonParametersHandler::GetInnerStruct(std::string & folderName)
+{
+	ToUpperFunct(folderName);
+
+	if (folderName == "BIN")
+	{
+		return innerStruct_bin;
+	}
+	else if (folderName == "CR")
+	{
+		return innerStruct_Cr;
+	}
+	else if (folderName == "DATA")
+	{
+		return innerStruct_data;
+	}
+	else if (folderName == "RES")
+	{
+		return innerStruct_res;
+	}
+	else
+	{
+		std::cerr << __FUNCTION__ << ": unknown argument -> <" << folderName << "'\n";
+		return innerStruct_bin;
+	}
 }

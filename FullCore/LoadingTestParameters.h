@@ -70,10 +70,20 @@ void Core::ReadingParameters()
 		case (msq):
 			GetParam(permak_max_states_quantity, item, 2);
 			break;
+		case (project):
+			p_project_name = GetStringParam(item, 2);
+			break;
+		case (unit):
+			GetParam(unit_number, item, 2);
+			break;
+		case (fuel_cycle):
+			GetParam(fuel_cycle_number, item, 2);
+			break;
 		default:
 			break;
 		}
 	}
+	std::cerr << "3. Files loaded : " << __FUNCTION__ << "\n";
 }
 
 void Core::ReadingUnitInfo()
@@ -91,20 +101,20 @@ void Core::ReadingUnitInfo()
 		else if (cntr == 1)
 		{
 			project_path_properties.push_back(outFile);
-			p_project_name = outFile;
+		//	p_project_name = outFile;
 		}
 		else if (cntr == 2) {
 			if (outFile.size() < 2)
 				outFile = "0" + outFile;
 			project_path_properties.push_back("B" + outFile);
-			unit_number = stoi(outFile);
+		//	unit_number = stoi(outFile);
 		}
 		else if (cntr == 3)
 		{
 			if (outFile.size() < 2)
 				outFile = "0" + outFile;
 			project_path_properties.push_back("K" + outFile);
-			fuel_cycle_number = stoi(outFile);
+		//	fuel_cycle_number = stoi(outFile);
 		}
 		/* end of new algorithm */
 		if (cntr == 4) break;
@@ -138,6 +148,7 @@ void Core::ReadingMapn(const uint16_t _count)
 		std::cerr << mapnExc.what() << " " << __FUNCTION__ << std::endl;
 
 	}
+	std::cerr << "4. Mapn Readed\n";
 }
 
 void Core::ReadingGaps()
@@ -150,11 +161,11 @@ void Core::ReadingGaps()
 		if (gapsString.size() <= _fa_count) {
 			if (gapsString.size() == 1)
 			{
-				
 				file.ScanDirectoryForFiles(gapsFilesList, gapsString[0]);
 			}
-			else
-				throw (std::out_of_range("Not enought gaps data\n"));
+			else {
+				throw std::out_of_range(">>>Wrong gaps data<<<\n");
+			}
 		}
 		else
 		{
@@ -167,10 +178,13 @@ void Core::ReadingGaps()
 	}
 	catch (std::exception & gapsExc)
 	{
+		system("cls");
 		std::cerr << gapsExc.what() << " " << __FUNCTION__ << std::endl;
+		system("pause");
 	}
 
 	SetStatMode();
+	std::cerr << "5. Gaps readed\n";
 }
 
 void Core::ReadingMapkas()
@@ -206,6 +220,7 @@ void Core::ReadingMapkas()
 	{
 		std::cerr << mapkasExc.what() << " " << __FUNCTION__ << std::endl;
 	}
+	std::cerr << "6. Mapskas readed\n";
 }
 
 void Core::ReadingBasement()
@@ -269,8 +284,6 @@ void Core::ReadingList()
 {
 	try
 	{
-
-
 		std::ifstream ifs(m_Compilation.GetFileByName("LIST.TXT"));
 		if (!ifs.is_open())
 			throw(std::invalid_argument("File LIST.txt not found\n"));
@@ -288,6 +301,8 @@ void Core::ReadingList()
 	{
 		std::cerr << listExc.what() << " " << __FUNCTION__ << std::endl;
 	}
+
+	std::cerr << "7. List readed\n";
 }
 
 void Core::ReadingPermpar()
@@ -302,8 +317,8 @@ void Core::ReadingPermpar()
 	catch (std::exception & permparExc)
 	{
 		std::cerr << permparExc.what() << " " << __FUNCTION__ << std::endl;
-
 	}
+	std::cerr << "8. Permpar readed\n";
 }
 
 void Core::ReadingConstants()
@@ -322,7 +337,7 @@ void Core::ReadingConstants()
 	{
 		std::cerr << constExc.what() << " " << __FUNCTION__ << std::endl;
 	}
-	//		CHT.PrintAll();
+	std::cerr << "9. Constants created\n";
 }
 
 void Core::ReadingNewdataParameters()
@@ -336,7 +351,7 @@ void Core::ReadingNewdataParameters()
 	{
 		std::cerr << ndexc.what() << __FUNCTION__ << std::endl;
 	}
-
+	std::cerr << "10. New data parameters readed\n";
 }
 
 void Core::ListHandle(const std::string & inputString)
@@ -439,6 +454,7 @@ void Core::ReadingTimeParameters()
 		std::cerr << "Error;\n";
 		std::cerr << __FUNCTION__ << " " << time_failed.what() << std::endl;
 	}
+	std::cerr << "11. Time parameters readed\n";
 }
 
 //// New functions not for reading, but for handling
@@ -484,9 +500,10 @@ void Core::ExtractCoordinates(VS & gapsArray)
 	{
 		GetParam(f_p, gapsArray[i], 2);
 		GetParam(s_p, gapsArray[i], 3);
-		first_coodinate.push_back(f_p);
+		first_coordinate.push_back(f_p);
 		second_coordinate.push_back(s_p);
 	}
+	std::cerr << "13. Gaps readed" << __FUNCTION__ << "\n";
 }
 
 void Core::Clear()
@@ -494,7 +511,7 @@ void Core::Clear()
 
 
 	//// Assemblies
-	first_coodinate.clear();
+	first_coordinate.clear();
 	second_coordinate.clear();
 	_fuelAssemblies.clear();
 	m_coreCoordinates.Clear();
@@ -519,6 +536,7 @@ void Core::Clear()
 	nal3.clear();
 	//nal2array.clear();
 	//nal3array.clear();
+	_mapkasArray.clear();
 
 	//// Others
  	system("cls");
@@ -538,12 +556,12 @@ void Core::ParsingTimeParameters()
 		}
 		parsed_times[i] = (reloaded_element-1);
 	}
-
+	std::cerr << "13. Time parameters parsed\n";
 }
 
 int Core::GetStateFromTime(int _time) const
 {
-	int lower = 0, upper = m_time_points.size(), mid = 0;
+	int lower = 0, upper = (int)m_time_points.size(), mid = 0;
 	while (m_time_points[mid]!=_time)
 	{
 		mid = (lower + upper) / 2;
@@ -556,4 +574,27 @@ int Core::GetStateFromTime(int _time) const
 	}
 
 	return mid;
+}
+
+void Core::CreatePermFile()
+{
+	std::cerr << "PERM file rewritting..\n";
+	VS permfile = file.GetLine(p_workdirectory + "PERM");
+
+	if (permfile.size() > 0) {
+		permfile[0] = p_workdirectory;
+		permfile[1] = p_project_name;
+		permfile[2] = std::to_string(unit_number);
+		permfile[3] = std::to_string(fuel_cycle_number);
+
+		std::ofstream ofs(p_workdirectory + "PERM");
+		for (const auto& str : permfile)
+			ofs << str << std::endl;
+	}
+	else
+	{
+		std::cerr << "Error rewritting PERM file => " << __FUNCTION__ << "\n";
+	}
+
+
 }

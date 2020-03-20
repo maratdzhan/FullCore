@@ -28,7 +28,7 @@ public:
 
 		// ѕри загрузке мен€етс€ текуща€ директори€ и библиотека грузитс€ оттуда, где ее нет.
 		//_path
-
+		std::cerr << "loading library from:\n" << m_fa_library_path.c_str() << "\n";
 		const char *path = m_fa_library_path.c_str();
 
 		int tr = _chdir(path);
@@ -61,6 +61,7 @@ public:
 		{
 			SetErrors(1);
 			std::cerr << lb_ex.what() << __FUNCTION__ << std::endl;
+			std::cerr << "Is library binary corresponds FullCore.EXE? (x64 != x86)\n";
 		}
 	}
 
@@ -259,7 +260,7 @@ public:
 	{
 		return m_errors;
 	}
-
+	
 	void Clear()
 	{
 		m_fa_library_path.clear();

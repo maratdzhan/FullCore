@@ -7,9 +7,9 @@ void Core::GetDebugPVM()
 
 	odstream << std::endl << std::endl;
 	int num = 1;
-	for (int i = 0; i < (int)first_coodinate.size(); i++)
+	for (int i = 0; i < (int)first_coordinate.size(); i++)
 	{
-		odstream << (num++) << "," << first_coodinate[i] << "," << second_coordinate[i] << std::endl;
+		odstream << (num++) << "," << first_coordinate[i] << "," << second_coordinate[i] << std::endl;
 		if (num % 164 == 0) 
 			num = 1;
 	}

@@ -37,6 +37,7 @@ void Core::PermparMaking()
 		std::cerr << __FUNCTION__ << " error: " << exc_PPm.what();
 	}
 
+	std::cerr << "Permpar created\n";
 }
 
 void Core::PermparSP(const std::string & _s)
@@ -186,7 +187,7 @@ void Core::LibraryIncluding()
 
 int Core::DefinePermparNumber(int number, size_t time_point)
 {
-	int result = 1+(_fa_count * time_point) + number;
+	int result = 1+(_fa_count * (int)time_point) + number;
 	//if (result > 1000) result += 5;
 	//if (result > 2000) result += 5;
 	//if (result > 3000) result += 5;

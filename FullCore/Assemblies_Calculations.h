@@ -3,13 +3,14 @@
 
 void Core::LoadingAssemblies()
 {
+	std::cerr << "14. Start work with assemblies ..\n";
 	_fuelAssemblies.resize(_fa_count);
 	fa_library_file = _c_library + "Coordinates_Definition.dll";
 	m_coreCoordinates.AddLibrary(fa_library_file); // Path to library
 	m_coreCoordinates.SetSize(_fa_count); // Assemblies quantity
 	m_coreCoordinates.GetTvsCoordinates(_tvs_step); // Get project assemblies x,y-position
 	std::vector<std::pair<double, double>> coordinates = m_coreCoordinates.V_ReturnCoordinatesTvs(); // Transfer coordinates. WHY?
-	
+	std::cerr << "OK\n";
 
 	try {
 		//// PROJECT
@@ -36,13 +37,13 @@ void Core::AssembliesInitialize(std::vector<std::pair<double, double>> & coordin
 
 		for (size_t num = 0; num < _fa_count; num++) {
 			//
-			num_e = num;
+			num_e = (int)num;
 			_fuelAssemblies[num].SetTimePointsQuantity(permak_max_states_quantity); // !!! NEW
 			_fuelAssemblies[num].InitializeParameters(_tvs_size, _tvs_step, num); // Init tvs-size, tvs-step, tvs-number
 			_fuelAssemblies[num].SetProjectCoordinates(coordinates[num].first, coordinates[num].second); // set project coord
 
-			for (size_t _tp = 0; _tp < permak_max_states_quantity; _tp++)
-				_fuelAssemblies[num].SetPermparNumber(DefinePermparNumber(_fuelAssemblies[num].GetTvsNumber(), _tp), _tp);
+			for (size_t _tp = 0; _tp < (size_t)permak_max_states_quantity; _tp++)
+				_fuelAssemblies[num].SetPermparNumber(DefinePermparNumber(_fuelAssemblies[num].GetTvsNumber(), (int)_tp), _tp);
 			
 		}
 	}
@@ -64,13 +65,14 @@ void Core::CycleSetNeigsForTvs()
 void Core::AssembliesShiftings(std::vector<std::pair<double, double>>& coordinates)
 {
 	size_t _state = 0;
-	for (size_t i = 0; i < first_coodinate.size(); ++i)
+	for (int i = 0; i < (int)first_coordinate.size(); ++i)
 	{
 		if (_coordinate_system == 1)
-			_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coodinate[i], second_coordinate[i], _state);
+			_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(first_coordinate[i], second_coordinate[i], _state);
 		else if (_coordinate_system == 2)
-			_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(coordinates[i % _fa_count].first - first_coodinate[i], coordinates[i % _fa_count].second - second_coordinate[i], _state);
-		if ((i % _fa_count) + 1 == _fa_count) _state++;
+			_fuelAssemblies[i % _fa_count].SetCurrentCoordinates(coordinates[i % _fa_count].first + first_coordinate[i], coordinates[i % _fa_count].second + second_coordinate[i], _state);
+		if ((i % _fa_count) + 1 == _fa_count) 
+			_state++;
 	}
 }
 
@@ -106,6 +108,7 @@ void Core::SetPlaneGapsForTvs(Assembly& tvs, const size_t /*_time_point*/ _state
 		else
 		{
 			double angle = M_PI * ((180 - side * 60) % 360) / 180.;
+			// THE FORMULA IS TRUE. FOR ALL EDGES AND ALL VARIANTS OF RADIUS-VECTORS. 10.02.2020 // Vasilyev M. N.
 			_gapSize = reflectorDistance - tvs.GetShiftX(_state) * cos(angle)
 				- tvs.GetShiftY(_state) * sin(angle) - nominalGapSize;
 			isRef = true;
@@ -176,9 +179,10 @@ std::pair<size_t, double> Core::Rounding(double _gs) const
 	size_t j = _gapSize.size();
 	size_t k = 0;
 	int itt = 0;
-	int gsz = (int)(_gs * 100-2);
-	_gs = (gsz/100.);
-
+	int gsz = (int)(_gs * 100 - 2);
+	_gs = (gsz / 100.);
+	if (_gs >= _gapSize[_gapSize.size() - 1])
+		return { _gapSize.size() - 2, _gapSize[_gapSize.size() - 2] };
 	while (j - i >= 2)
 	{
 		k = (j + i) / 2;
@@ -190,9 +194,12 @@ std::pair<size_t, double> Core::Rounding(double _gs) const
 
 		itt++;
 		if (itt > 1000)
+		{
 			throw (std::out_of_range("Can't find match in ROUNDING()\n"));
-
+			break;
+		}
 	}
+
 	return { j ,_gapSize[j] };
 
 }
@@ -228,24 +235,41 @@ void Core::SetAssemblyGapsFinal()
 //	CycleSetCornerGapsForTvs(); // Set corner constants for all states (time_point)
 	for (auto& tvs : _fuelAssemblies)
 		SetAdditionalAttributes(tvs);
-
+	std::cerr << "Additional attributes has been set\n";
+	
 	for (auto& tvs : _fuelAssemblies)
 		SetEnrichment(tvs);
+	std::cerr << "Enrichment has been set\n";
 
-	for (size_t _state = 0; _state < permak_max_states_quantity; _state++) {
-		double bor = m_bor[GetStateFromTime(reloads[_state])];
-		for (auto& tvs : _fuelAssemblies)
-		{
-			tvs.SetBoric(bor, _state);
-			RebuildGaps(tvs, _state);
-			BuildMapkas(tvs, _state);
-			SetNalArrays(tvs, _state);
+	int ls = 0, ltvs = 0, v=-1;
+	try {
+		for (size_t _state = 0; _state < permak_max_states_quantity; _state++) {
+			double bor = m_bor[GetStateFromTime(reloads[_state])];
+			ls = _state;
+			v = 0;
+			for (auto& tvs : _fuelAssemblies)
+			{
+				ltvs = tvs.GetTvsNumber();
+				tvs.SetBoric(bor, (int)_state);
+				v=1;
+				RebuildGaps(tvs, (int)_state);
+				v=2;
+				BuildMapkas(tvs, (int)_state);
+				v=3;
+				SetNalArrays(tvs, (int)_state);
+				v=4;
+			}
 		}
 	}
+	catch (std::exception quote)
+	{
+		std::cerr << ">>>>>> ERROR FOUND!!! <<<<<<\n";
+		std::cerr << "error at state " << ls << " tvs " << ltvs << " at program " << v << std::endl;
+		system("pause");
+	}
 
-
-
-}
+	std::cerr << "Gaps has been corrected with modifiers coefficients\n";
+ }
 
 void Core::SetAdditionalAttributes(Assembly& tvs)
 {
@@ -271,8 +295,8 @@ void Core::RebuildGaps(Assembly& tvs, const size_t _state)
 	{
 
 		if (isModifierAccounted) {
-			tvs.SetPlaneGapSize(_side, SetCorrection(tvs.GetBoric(_state), 0.7321, tvs.GetRo5(_side), tvs.GetPlaneGapSize(_side, _state)), _state);
-			tvs.SetCornerGapSize(_side, SetCorrection(tvs.GetBoric(_state), 0.7321, tvs.GetRo5(_side), tvs.GetCornerGapSize(_side, _state)), _state);
+			tvs.SetPlaneGapSize(_side, SetCorrection(tvs.GetBoric((int)_state), 0.7321, tvs.GetRo5(_side), tvs.GetPlaneGapSize(_side, _state)), _state);
+			tvs.SetCornerGapSize(_side, SetCorrection(tvs.GetBoric((int)_state), 0.7321, tvs.GetRo5(_side), tvs.GetCornerGapSize(_side, _state)), _state);
 			// Проблема в том, что в выбранной ТВС меняется зазор. Когда мы доходим до противоположной ТВС с таким же зазором он может иметь другую 
 			// ведичину (другое обогащение кассеты) - раньше брали как среднее трех кассет - можно брать так же и сейчас
 		}
@@ -383,12 +407,68 @@ void Core::SetNalArrays(Assembly& tvs, const size_t _state)
 
 	VS _tvp = tvs.GetPlaneConstants(_state);
 	VS _tvc = tvs.GetCornerConstants(_state);
-		for (size_t t = 0; t < geometry; t++) {
-			if (tvs.GetRef(t))
+	for (size_t t = 0; t < (size_t)geometry; t++) {
+		if (tvs.GetRef((int)t))
+		{
+			nal2.insert(_tvp[t]);
+			nal3.insert(_tvc[t]);
+			nal3.insert(_tvc[(t + 1) % geometry]);
+		}
+	}
+}
+
+
+void Core::SaveGaps(int state_num)
+{
+	std::vector<std::vector<int>> accountedArray, neig_array;
+	VS content;
+	accountedArray.resize(_fa_count);
+	neig_array.resize(_fa_count);
+
+	for (int _fa = 0; _fa < _fa_count; _fa++) {
+		neig_array[_fa] = m_coreCoordinates.Neig_Array(_fa);
+	}
+	
+
+	for (int _time_point = 0; _time_point < permak_max_states_quantity; _time_point++)
+	{
+		for (int _fa = 0; _fa < _fa_count; _fa++)
+			accountedArray[_fa] = m_coreCoordinates.Neig_Array(_fa);
+
+		for (int _fa = 0; _fa < _fa_count; _fa++)
+		{
+			std::string _v;
+			for (int _side = 0; _side < geometry; _side++)
 			{
-				nal2.insert(_tvp[t]);
-				nal3.insert(_tvc[t]);
-				nal3.insert(_tvc[(t + 1) % geometry]);
+				if (accountedArray[_fa][_side] != -2)
+				{
+					_v+= std::to_string(state_num);
+					_v += ",";
+					_v += std::to_string(_time_point);
+					_v += ",";
+					_v += std::to_string(_fa + 1);
+					_v += ",";
+					_v += std::to_string(_side + 1);
+					_v += ",";
+					_v += std::to_string(_fuelAssemblies[_fa].GetPlaneGapSize(_side, _time_point));
+					if (accountedArray[_fa][_side]>=0)
+						accountedArray[neig_array[_fa][_side] - 1][(_side + (geometry / 2)) % (geometry)] = -2;
+					accountedArray[_fa][_side] = -2;
+					content.push_back(_v);
+				}
+				_v.clear();
 			}
 		}
+	}
+
+	CommonParametersHandler h1(true);
+	std::string save_path = "res";
+	save_path = p_workdirectory + h1.GetInnerStruct(save_path) + "/gap_size.txt";
+	std::ofstream ofs(save_path, std::ios_base::app);
+	for (const auto& line : content)
+	{
+		ofs << line<<"\n";
+	}
+	std::cerr << "Gaps saved!\n";
+	ofs.close();
 }

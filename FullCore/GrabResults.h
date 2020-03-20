@@ -21,8 +21,8 @@ void Core::GrabResults()
 void Core::GrabOutFile(std::vector<std::string>& kq_str)
 {
 	std::string outFile;
-	std::ifstream perm(p_workdirectory + "PERM");
-	if (!perm.is_open()) { std::cerr << __FUNCTION__ << " perm file is not opened. Check folder: " << p_workdirectory << "\n"; return; }
+//	std::ifstream perm(p_workdirectory + "PERM");
+//	if (!perm.is_open()) { std::cerr << __FUNCTION__ << " perm file is not opened. Check folder: " << p_workdirectory << "\n"; return; }
 
 	//int cntr = 0;
 	//while (1)
@@ -33,7 +33,7 @@ void Core::GrabOutFile(std::vector<std::string>& kq_str)
 	//}
 	//outFile = unitPath + outFile;
 	std::cerr << "Grab OUT-File path: " << outFile << std::endl;
-	perm.close();
+//	perm.close();
 
 	
 
@@ -148,4 +148,6 @@ void Core::OutSchemeElementInitializing()
 	-1,-1,1,2,3,4,5,6,-1,-1,
 	-1,-1,-1,-1,-1,-1,-1,
 	};
+
+	std::cerr << "1. result scheme loaded\n";
 }

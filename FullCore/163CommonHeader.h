@@ -27,7 +27,7 @@ protected:
 	uint16_t _tveg_count;
 	uint16_t _node_count;
 	uint8_t _coordinate_system = 0;
-	std::vector<double> first_coodinate;
+	std::vector<double> first_coordinate;
 	std::vector<double> second_coordinate;
 	SS gapsFilesList;
 	uint8_t accounted_points_number;
@@ -164,9 +164,10 @@ public:
 	void RebuildGaps(Assembly& tvs, const size_t _time_point);
 	void SetEnrichment(Assembly& tvs);
 	void SetNalArrays(Assembly& tvs, const size_t _state);
-	
+	void SaveGaps(int state_num);
+
 	//// Making newdata file
-		// Half part may be repalaced with a cycle, that call all parameters in order
+	// Half part may be repalaced with a cycle, that call all parameters in order
 	void NewdataMaking();
 	void NewdataPS();
 	void CoolantParsing(const std::vector<std::string>& inputVector, std::vector<std::vector<double>>& outputVector);
@@ -192,11 +193,15 @@ public:
 	void SaveKqValues(std::vector<std::string>& output);
 	int GetOutSchemeElement(int& inputNumber);
 	void OutSchemeElementInitializing();
+
+	//// PERM
+	void CreatePermFile();
 };
 
 
 Core::Core(const Calculation& _currentObject)
 {
+	
 	accounted_points_number = 0;
 	fuel_cycle_number = 0;
 	isInitialized = _currentObject.IsCalculationInitialized();
@@ -212,7 +217,7 @@ Core::Core(const Calculation& _currentObject)
 	noErrors = 0;
 	nominalGapSize = 0;
 	permak_max_states_quantity = 0;
-	reflectorDistance = 4.0;
+	reflectorDistance = 0.0;
 	stepGapValue = 0;
 	unit_number = 0;
 
@@ -236,6 +241,7 @@ Core::Core(const Calculation& _currentObject)
 			m_Compilation.SetTestName(_currentObject.GetTestName());
 			m_Compilation.SetInitializing();
 			m_Compilation.CopyPathsMap(_currentObject.PathsMap());
+			std::cerr << "2. Files array has been copied\n";
 		}
 		catch (std::exception& Core_constructor_exception)
 		{
@@ -248,8 +254,15 @@ Core::Core(const Calculation& _currentObject)
 
 void Core::StatMode()
 {
+	int counter = 0;
 	bool first = true;
 	//// Prepare gaps in cycle and run < single state mode >
+	std::string rs = "res";
+	CommonParametersHandler h0(true);
+	std::ofstream ofs(p_workdirectory + h0.GetInnerStruct(rs)+"gapsFilesList.txt");
+	for (const auto& item : gapsFilesList)
+		ofs << item << "\n";
+	ofs.close();
 	for (const auto& item : gapsFilesList) {
 		VS gapsStrings = file.GetLine(item);
 		ExtractCoordinates(gapsStrings);
@@ -259,11 +272,14 @@ void Core::StatMode()
 			NewdataMaking();
 			first = false;
 		}
+		SaveGaps(counter);
 		SetAssemblyGapsFinal();
 		PermparMaking();
 
 		if (GetStatMode()) {
-			std::cerr << ">>>>>> Waiting for PERMAK...\n";
+			CreatePermFile();
+			std::cerr << ">>>>>> Waiting for PERMAK... State: "<<counter++<<"\n";
+			std::cerr << "name: " << item.c_str() << "\n";
 			system("pause");
 		}
 		GrabResults();
