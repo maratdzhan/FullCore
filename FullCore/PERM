@@ -1,0 +1,14 @@
+D:\Vasiliev\PERMAK-A\XIPI_18L_W\                                         
+ROSTOV                                                                          
+2                                                                               
+1                                                                               
+permVAS.out                                                                     
+-999                                                                            
+&DAN                                                                            
+IPER=0                                                                          
+IGOM=0                                                                          
+TKK=10000.                                                                      
+NTBC=-1                                                                         
+IPRINT=0                                                                        
+PSITEF=-999                                                                     
+&END                                                                            

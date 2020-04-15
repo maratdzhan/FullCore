@@ -15,10 +15,40 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="PaintFullCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main_163.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphParameters_163.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Coordinates_definition_163.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Assemblies_Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Calculate_core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Extraction_KQ.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Modifier_Coefficient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core_Objects_Handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleColor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kk_calculating.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PaintSoloTvs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GetParam.cpp">
@@ -26,58 +56,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GraphParameters_163.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="163CommonHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Coordinates_Definition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Assemblies_Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Extraction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="kk_calculating.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GetParam.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HashTables.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Permapar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Assemblies_Class.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Assemblies_Calculations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Newdata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GrabResults.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommonParametersHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Including.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Calculation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FileHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnumList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadingTestParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Modifier_coefficient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
