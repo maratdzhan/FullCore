@@ -280,6 +280,8 @@ void Core::StatMode()
 			CreatePermFile();
 			std::cerr << ">>>>>> Waiting for PERMAK... State: "<<counter++<<"\n";
 			std::cerr << "name: " << item.c_str() << "\n";
+
+			system("#autorun.bat");
 			system("pause");
 		}
 		GrabResults();
