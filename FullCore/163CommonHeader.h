@@ -250,8 +250,6 @@ Core::Core(const Calculation& _currentObject)
 	}
 }
 
-
-
 void Core::StatMode()
 {
 	int counter = 0;
@@ -282,7 +280,7 @@ void Core::StatMode()
 			std::cerr << "name: " << item.c_str() << "\n";
 
 			system("#autorun.bat");
-			system("pause");
+			system("FullCore.exe");
 		}
 		GrabResults();
 		Clear();

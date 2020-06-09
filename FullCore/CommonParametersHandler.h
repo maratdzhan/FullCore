@@ -32,7 +32,7 @@ protected:
 
 CommonParametersHandler::CommonParametersHandler() {
 
-	mainParameters = "gap.par";
+	mainParameters = "gap_8.par";
 	InnerStructInitialize();
 	FileListInitialize();
 	GetParametersList();
