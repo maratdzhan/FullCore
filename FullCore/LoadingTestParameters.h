@@ -15,8 +15,8 @@ void Core::FileReading()
 	ReadingNewdataParameters();
 	ReadingTimeParameters();
 	ParsingTimeParameters();
-	//	if (key)
-	//		ReadingBunrup();
+	if (singleStateMode == 1)
+		GSLastState(0, false);
 }
 
 void Core::ReadingParameters()
@@ -595,6 +595,33 @@ void Core::CreatePermFile()
 	{
 		std::cerr << "Error rewritting PERM file => " << __FUNCTION__ << "\n";
 	}
+}
 
+void Core::GSLastState(int inputParam, bool saving)
+{
+	std::string _init_path = m_Compilation.GetFileByName("WUD.CON"); // any file
+	_init_path = _init_path.substr(0, _init_path.find_last_of(92)+1);
+	_init_path = _init_path + "LastState.txt";
 
+	if (saving)
+	{
+		std::ofstream file_obj(_init_path, std::ios_base::out);
+		file_obj << inputParam;
+		file_obj.close();
+	}
+	else
+	{
+		std::string _value;
+		std::ifstream file_obj(_init_path, std::ios_base::in);
+		std::getline(file_obj, _value);
+		try {
+			lastState = stoi(_value);
+		}
+		catch (std::exception & exc)
+		{
+			std::cerr << "ERROR ON PARSING LAST STATE: ?NAN?\n" << exc.what() << std::endl;
+			system("pause");
+		}
+		file_obj.close();
+	}
 }

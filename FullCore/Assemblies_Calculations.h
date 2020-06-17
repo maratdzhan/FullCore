@@ -114,6 +114,13 @@ void Core::SetPlaneGapsForTvs(Assembly& tvs, const size_t /*_time_point*/ _state
 			isRef = true;
 		}
 
+		if (_gapSize < -10)
+		{
+			std::cerr << __FUNCTION__ << " ";
+			std::cerr << "WRONG GAP SIZE! -> " << _gapSize << " at " << tvs.GetTvsNumber() << std::endl;
+			system("pause");
+			return;
+		}
 		std::pair < size_t, double > t = Rounding(_gapSize);
 		tvs.SetPlaneGapSize(side, t.second, _state);
 		tvs.SetPlaneConstants(side, _gapSizePlaneConstant[t.first], _state);
@@ -440,9 +447,10 @@ void Core::SaveGaps(int state_num)
 			std::string _v;
 			for (int _side = 0; _side < geometry; _side++)
 			{
-				if (accountedArray[_fa][_side] != -2)
-				{
-					_v+= std::to_string(state_num);
+				///## Wanted to save all gaps, that why comment as ///##
+				///##if (accountedArray[_fa][_side] != -2)
+				///##{
+					_v += std::to_string(state_num);
 					_v += ",";
 					_v += std::to_string(_time_point);
 					_v += ",";
@@ -451,11 +459,11 @@ void Core::SaveGaps(int state_num)
 					_v += std::to_string(_side + 1);
 					_v += ",";
 					_v += std::to_string(_fuelAssemblies[_fa].GetPlaneGapSize(_side, _time_point));
-					if (accountedArray[_fa][_side]>=0)
-						accountedArray[neig_array[_fa][_side] - 1][(_side + (geometry / 2)) % (geometry)] = -2;
-					accountedArray[_fa][_side] = -2;
+				///##	if (accountedArray[_fa][_side]>=0)
+				///##		accountedArray[neig_array[_fa][_side] - 1][(_side + (geometry / 2)) % (geometry)] = -2;
+				///##	accountedArray[_fa][_side] = -2;
 					content.push_back(_v);
-				}
+				///##}
 				_v.clear();
 			}
 		}
@@ -463,8 +471,9 @@ void Core::SaveGaps(int state_num)
 
 	CommonParametersHandler h1(true);
 	std::string save_path = "res";
-	save_path = p_workdirectory + h1.GetInnerStruct(save_path) + "/gap_size.txt";
+	save_path = p_workdirectory + h1.GetInnerStruct(save_path) + "/gap_size_9.txt";
 	std::ofstream ofs(save_path, std::ios_base::app);
+	ofs << "state,time_point,fa,side,gap_size\n";
 	for (const auto& line : content)
 	{
 		ofs << line<<"\n";

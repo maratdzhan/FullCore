@@ -23,18 +23,17 @@ public:
 
 	void GetTvsCoordinates(double fa_step)
 	{
-		//static HINSTANCE hLibrary_163;
+
 		HMODULE hLibrary_163;
 
-		// ѕри загрузке мен€етс€ текуща€ директори€ и библиотека грузитс€ оттуда, где ее нет.
-		//_path
+
 		std::cerr << "loading library from:\n" << m_fa_library_path.c_str() << "\n";
 		const char *path = m_fa_library_path.c_str();
 
 		int tr = _chdir(path);
 
 		hLibrary_163 = LoadLibrary(("Coordinates_Definition"));
-		double(*pFunction) (double, int, bool);
+		std::pair<double,double> (*pFunction) (double, int, int, bool);
 		try {
 			if (hLibrary_163)
 			{
@@ -46,9 +45,8 @@ public:
 					double x = 0, y = 0;
 					for (int i = 1; i <= static_cast<int>(core_fa_count); ++i)
 					{
-						x = pFunction(fa_step, i, true);
-						y = pFunction(fa_step, i, false);
-						m_coordinates.push_back({ x,y });
+						std::pair<double, double> v = pFunction(fa_step, i, 0, 1);
+						m_coordinates.push_back(v);
 					}
 				}
 			}

@@ -16,7 +16,9 @@
 class Core
 {
 protected:
+	int lastState;
 	int noErrors;
+	int singleStateMode;
 	bool statMode;
 	double _tvs_size;
 	double _tvs_step;
@@ -39,6 +41,7 @@ protected:
 	std::string outFile;
 	VS project_path_properties;
 	uint8_t permak_max_states_quantity;
+
 	// Newdata:
 	std::vector<int16_t> m_time_points, m_xe_flag, m_sm_flag, m_dopler_flag, reloads, parsed_times;
 	int m_states_number;
@@ -96,7 +99,7 @@ protected:
 	
 public:
 	//// Modes && Initializing
-	Core(const Calculation& _currentObject);
+	Core(const Calculation& _currentObject, int);
 	void StatMode();
 	void SingleMode();
 	void Clear();
@@ -113,6 +116,7 @@ public:
 	void ReadingPermpar();
 	void ReadingConstants();
 	void ReadingNewdataParameters();
+	void GSLastState(int, bool);
 	void ReadingTimeParameters();
 	void ParsingTimeParameters();
 	void SetStatMode();
@@ -199,9 +203,10 @@ public:
 };
 
 
-Core::Core(const Calculation& _currentObject)
+Core::Core(const Calculation& _currentObject, int ssm)
 {
-	
+	singleStateMode = ssm;
+	lastState = 0;
 	accounted_points_number = 0;
 	fuel_cycle_number = 0;
 	isInitialized = _currentObject.IsCalculationInitialized();
@@ -259,11 +264,19 @@ void Core::StatMode()
 	//// Prepare gaps in cycle and run < single state mode >
 	std::string rs = "res";
 	CommonParametersHandler h0(true);
-	std::ofstream ofs(p_workdirectory + h0.GetInnerStruct(rs)+"gapsFilesList.txt");
+	std::ofstream ofs(p_workdirectory + h0.GetInnerStruct(rs) + "gapsFilesList.txt");
 	for (const auto& item : gapsFilesList)
 		ofs << item << "\n";
 	ofs.close();
+
+	//// FULL STATES LIST MODE
 	for (const auto& item : gapsFilesList) {
+		if (singleStateMode == 1 && counter != lastState)
+		{
+			counter++;
+			continue;
+		}
+
 		VS gapsStrings = file.GetLine(item);
 		ExtractCoordinates(gapsStrings);
 
@@ -278,15 +291,15 @@ void Core::StatMode()
 
 		if (GetStatMode()) {
 			CreatePermFile();
-			std::cerr << ">>>>>> Waiting for PERMAK... State: "<<counter++<<"\n";
+			std::cerr << ">>>>>> Waiting for PERMAK... State: " << counter++ << "\n";
 			std::cerr << "name: " << item.c_str() << "\n";
-
 			system("#autorun.bat");
-			system("pause");
 		}
 		GrabResults();
 		Clear();
 	}
+	if (singleStateMode == 1)
+		GSLastState(lastState + 1, true);
 }
 
 void Core::SingleMode()
