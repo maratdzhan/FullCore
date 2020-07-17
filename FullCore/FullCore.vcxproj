@@ -129,6 +129,7 @@
     <ClInclude Include="Assemblies_Calculations.h" />
     <ClInclude Include="Assemblies_Class.h" />
     <ClInclude Include="Calculation.h" />
+    <ClInclude Include="Commands.h" />
     <ClInclude Include="CommonParametersHandler.h">
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>

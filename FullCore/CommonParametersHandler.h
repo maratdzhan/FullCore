@@ -3,8 +3,7 @@
 class CommonParametersHandler
 {
 public:
-	CommonParametersHandler();
-	CommonParametersHandler(bool isBlank);
+	CommonParametersHandler(const std::string&);
 
 	void FilesListCheck();
 	void FileListInitialize();
@@ -26,13 +25,14 @@ protected:
 	VS temp;
 	VS testName;
 	std::set<std::string> fileList;
-	std::map<std::string, std::string> parametersList;
+	MSS parametersList;
 	std::vector<Calculation> m_relativeFileList;
 };
 
-CommonParametersHandler::CommonParametersHandler() {
+CommonParametersHandler::CommonParametersHandler(const std::string & input_file = "gap.par") {
 
-	mainParameters = "gap.par";
+	std::cerr << "Input parameters file: " << input_file << std::endl;
+	mainParameters = input_file;
 	InnerStructInitialize();
 	FileListInitialize();
 	GetParametersList();
@@ -41,20 +41,16 @@ CommonParametersHandler::CommonParametersHandler() {
 
 }
 
-CommonParametersHandler::CommonParametersHandler(bool isBlank)
-{
-	InnerStructInitialize();
-}
-
 void CommonParametersHandler::InnerStructInitialize()
 {
 	innerStruct_bin = "bin";
 	innerStruct_data = innerStruct_bin + char(92) + "data";
 	innerStruct_Cr = innerStruct_data + char(92) + "Cr";
 	innerStruct_res = innerStruct_bin + char(92) + "res";
-	std::cerr << fileReader.CreatePath(innerStruct_data) << " ";
-	std::cerr << fileReader.CreatePath(innerStruct_Cr) << " ";
-	std::cerr << fileReader.CreatePath(innerStruct_res) << " \n";
+	std::cerr << "Errors when creating folders <" << __FUNCTION__ << ">:\n";
+	std::cerr << innerStruct_data << ": " << fileReader.CreatePath(innerStruct_data) << "\n";
+	std::cerr << innerStruct_Cr << ": " << fileReader.CreatePath(innerStruct_Cr) << "\n";
+	std::cerr << innerStruct_res << ": " << fileReader.CreatePath(innerStruct_res) << "\n";
 }
 
 void CommonParametersHandler::FileListInitialize()
@@ -115,6 +111,7 @@ void CommonParametersHandler::GetTestsName()
 	{
 		std::cerr << exc.what()
 			<< " " << __FUNCTION__ << std::endl;
+		system("pause");
 	}
 
 }
@@ -146,6 +143,7 @@ void CommonParametersHandler::FilesListCheck()
 		{
 			std::cerr << "calculation cant be prepared: "
 				<< m_relativeFileList[j].GetTestName() << " not inizialized. Reason:\nWrong input file's count\n";
+			system("pause");
 		}
 		else
 			m_relativeFileList[j].SetInitializing();

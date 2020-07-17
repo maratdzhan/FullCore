@@ -6,9 +6,10 @@
 
 #include "163CommonHeader.h"
 
-void PrintArgs(char **arr)
+void PrintArgs(const char **arr)
 {
 	int i = 0;
+	printf("Command line arguments:\n");
 	if (arr)
 		while (arr[i])
 		{
@@ -18,44 +19,32 @@ void PrintArgs(char **arr)
 	printf("\n");
 }
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
-	CommonParametersHandler handle;
 
-	int SSM = 0;
-	int SSM_STATE = 0;
 	PrintArgs(argv);
-	try {
-		if (argc > 1) {
-			SSM = atoi(argv[1]);
-			std::cout << "SINGLE_STATE_MODE = " << SSM << std::endl;
-			if (SSM == 1)
-			{
-				SSM_STATE = atoi(argv[2]);
-				std::cout << "STATE = " << SSM_STATE << std::endl;
-			}
-		}
+	CommandLineArgsBuilder cmd_args;
+	cmd_args.Parser(argv);
+	if (cmd_args.errors) {
+		std::cerr << "Error in cmd-line arguments\n";
+		return (1);
 	}
-	catch (std::exception & e)
-	{
-		std::cerr << "invalid parameter at ARGV => " << e.what() << "\n";
-		system("pause");
-		return 1;
-	}
+
+	CommonParametersHandler handle(cmd_args.ExtractParameter("INPUT_FILE"));
+	std::string rs = "res";
 
 	for (const auto& content : handle.GetFilesList())
 	{
 		if (!content.IsCalculationInitialized())
 			continue;
 
-		Core CurrentLoad(content, SSM);
-		
+		Core CurrentLoad(content, cmd_args);
 
-		if (!SSM)
-			CurrentLoad.GSLastState(SSM_STATE, true);
+	//	if (std::stoi(CurrentLoad.GetArgParameter("SSM")))
+	//		CurrentLoad.GSLastState(std::stoi(CurrentLoad.GetArgParameter("SSM_STATE")), true);
 		CurrentLoad.FileReading();
 		if (CurrentLoad.GetStatMode())
-			CurrentLoad.StatMode();
+			CurrentLoad.StatMode(handle.GetInnerStruct(rs));
 		else
 			CurrentLoad.SingleMode();
 
@@ -63,4 +52,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

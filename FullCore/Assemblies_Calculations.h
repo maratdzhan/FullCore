@@ -8,7 +8,7 @@ void Core::LoadingAssemblies()
 	fa_library_file = _c_library + "Coordinates_Definition.dll";
 	m_coreCoordinates.AddLibrary(fa_library_file); // Path to library
 	m_coreCoordinates.SetSize(_fa_count); // Assemblies quantity
-	m_coreCoordinates.GetTvsCoordinates(_tvs_step); // Get project assemblies x,y-position
+	m_coreCoordinates.GetTvsCoordinates(_tvs_step, std::stoi(arguments.ExtractParameter("DEBUG"))); // Get project assemblies x,y-position
 	std::vector<std::pair<double, double>> coordinates = m_coreCoordinates.V_ReturnCoordinatesTvs(); // Transfer coordinates. WHY?
 	std::cerr << "OK\n";
 
@@ -44,7 +44,6 @@ void Core::AssembliesInitialize(std::vector<std::pair<double, double>> & coordin
 
 			for (size_t _tp = 0; _tp < (size_t)permak_max_states_quantity; _tp++)
 				_fuelAssemblies[num].SetPermparNumber(DefinePermparNumber(_fuelAssemblies[num].GetTvsNumber(), (int)_tp), _tp);
-			
 		}
 	}
 	catch (std::exception& exc)
@@ -248,6 +247,8 @@ void Core::SetAssemblyGapsFinal()
 		SetEnrichment(tvs);
 	std::cerr << "Enrichment has been set\n";
 
+	if (isModifierAccounted)
+		std::cerr << "Modifiers will be accounted\n";
 	int ls = 0, ltvs = 0, v=-1;
 	try {
 		for (size_t _state = 0; _state < permak_max_states_quantity; _state++) {
@@ -275,7 +276,6 @@ void Core::SetAssemblyGapsFinal()
 		system("pause");
 	}
 
-	std::cerr << "Gaps has been corrected with modifiers coefficients\n";
  }
 
 void Core::SetAdditionalAttributes(Assembly& tvs)
@@ -425,7 +425,7 @@ void Core::SetNalArrays(Assembly& tvs, const size_t _state)
 }
 
 
-void Core::SaveGaps(int state_num)
+void Core::SaveGaps(int state_num, const std::string &value)
 {
 	std::vector<std::vector<int>> accountedArray, neig_array;
 	VS content;
@@ -469,9 +469,8 @@ void Core::SaveGaps(int state_num)
 		}
 	}
 
-	CommonParametersHandler h1(true);
 	std::string save_path = "res";
-	save_path = p_workdirectory + h1.GetInnerStruct(save_path) + "/gap_size_9.txt";
+	save_path = p_workdirectory + value + "/gap_size.txt";
 	std::ofstream ofs(save_path, std::ios_base::app);
 	ofs << "state,time_point,fa,side,gap_size\n";
 	for (const auto& line : content)

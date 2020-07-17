@@ -5,6 +5,7 @@
 #include "Including.h"
 #include "EnumList.h"
 #include "GetParam.h"
+#include "Commands.h"
 #include "Coordinates_Definition.h"
 #include "Assemblies_Class.h"
 #include "HashTables.h"
@@ -16,9 +17,12 @@
 class Core
 {
 protected:
+
 	int lastState;
 	int noErrors;
-	int singleStateMode;
+	// Command line arguments
+	CommandLineArgsBuilder arguments;
+	//
 	bool statMode;
 	double _tvs_size;
 	double _tvs_step;
@@ -99,10 +103,11 @@ protected:
 	
 public:
 	//// Modes && Initializing
-	Core(const Calculation& _currentObject, int);
-	void StatMode();
+	Core(const Calculation& _currentObject, const CommandLineArgsBuilder& input_parameters);
+	void StatMode(const std::string& value);
 	void SingleMode();
 	void Clear();
+	std::string GetArgParameter(const std::string parameter_name) const;
 
 	//// Reading test input files
 	void FileReading();
@@ -168,7 +173,7 @@ public:
 	void RebuildGaps(Assembly& tvs, const size_t _time_point);
 	void SetEnrichment(Assembly& tvs);
 	void SetNalArrays(Assembly& tvs, const size_t _state);
-	void SaveGaps(int state_num);
+	void SaveGaps(int state_num, const std::string& value);
 
 	//// Making newdata file
 	// Half part may be repalaced with a cycle, that call all parameters in order
@@ -203,14 +208,15 @@ public:
 };
 
 
-Core::Core(const Calculation& _currentObject, int ssm)
+Core::Core(const Calculation& _currentObject, const CommandLineArgsBuilder & inp_args)
 {
-	singleStateMode = ssm;
-	lastState = 0;
+
+	arguments = inp_args;
+	lastState = std::stoi(arguments.ExtractParameter("SSM_STATE"));
 	accounted_points_number = 0;
 	fuel_cycle_number = 0;
 	isInitialized = _currentObject.IsCalculationInitialized();
-	isModifierAccounted = true;
+	isModifierAccounted = std::stoi(arguments.ExtractParameter("MODIFIERS"));
 	statMode = false;
 	geometry = 6;
 	m_ireg = 0;
@@ -246,7 +252,7 @@ Core::Core(const Calculation& _currentObject, int ssm)
 			m_Compilation.SetTestName(_currentObject.GetTestName());
 			m_Compilation.SetInitializing();
 			m_Compilation.CopyPathsMap(_currentObject.PathsMap());
-			std::cerr << "2. Files array has been copied\n";
+			std::cerr << "2. Array with files has been copied\n";
 		}
 		catch (std::exception& Core_constructor_exception)
 		{
@@ -257,21 +263,22 @@ Core::Core(const Calculation& _currentObject, int ssm)
 
 
 
-void Core::StatMode()
+void Core::StatMode(const std::string&value)
 {
 	int counter = 0;
 	bool first = true;
 	//// Prepare gaps in cycle and run < single state mode >
-	std::string rs = "res";
-	CommonParametersHandler h0(true);
-	std::ofstream ofs(p_workdirectory + h0.GetInnerStruct(rs) + "gapsFilesList.txt");
+	std::ofstream ofs(p_workdirectory + value  + "gapsFilesList.txt");
 	for (const auto& item : gapsFilesList)
 		ofs << item << "\n";
 	ofs.close();
+	std::cerr << "Total gaps list: " << gapsFilesList.size() << std::endl;
 
 	//// FULL STATES LIST MODE
 	for (const auto& item : gapsFilesList) {
-		if (singleStateMode == 1 && counter != lastState)
+
+		int l = std::stoi(arguments.ExtractParameter("SSM"));
+		if (std::stoi(arguments.ExtractParameter("SSM")) == 1 && counter != lastState)
 		{
 			counter++;
 			continue;
@@ -285,7 +292,7 @@ void Core::StatMode()
 			NewdataMaking();
 			first = false;
 		}
-		SaveGaps(counter);
+		SaveGaps(counter, value);
 		SetAssemblyGapsFinal();
 		PermparMaking();
 
@@ -294,12 +301,24 @@ void Core::StatMode()
 			std::cerr << ">>>>>> Waiting for PERMAK... State: " << counter++ << "\n";
 			std::cerr << "name: " << item.c_str() << "\n";
 			system("#autorun.bat");
+			if (std::stoi(arguments.ExtractParameter("C_MODE")))
+			{
+				std::string command;
+				command = arguments.ExtractParameter("C_MODE_FILE");
+				command += " SSM=";
+				command += arguments.ExtractParameter("SSMN");
+				command += " SSM_STATE=";
+				command += arguments.ExtractParameter("SSMN_STATE");
+				system(command.c_str());
+				int v = std::stoi(arguments.ExtractParameter("SSMN_STATE"));
+				arguments.SetArgument("SSMN_STATE", std::to_string(v + 1));
+			}
 		}
 		GrabResults();
 		Clear();
 	}
-	if (singleStateMode == 1)
-		GSLastState(lastState + 1, true);
+	//if (std::stoi(arguments.ExtractParameter("SSM")) == 1)
+	//	GSLastState(lastState + 1, true);
 }
 
 void Core::SingleMode()
@@ -310,6 +329,10 @@ void Core::SingleMode()
 	GrabResults();
 }
 
+std::string Core::GetArgParameter(const std::string parameter_name) const
+{
+	return (arguments.ExtractParameter(parameter_name));
+}
 
 #include "LoadingTestParameters.h"
 #include "Modifier_coefficient.h"

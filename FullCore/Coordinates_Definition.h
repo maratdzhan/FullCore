@@ -21,7 +21,7 @@ public:
 		core_fa_count = size_of_core;
 	}
 
-	void GetTvsCoordinates(double fa_step)
+	void GetTvsCoordinates(double fa_step, int debug)
 	{
 
 		HMODULE hLibrary_163;
@@ -45,7 +45,7 @@ public:
 					double x = 0, y = 0;
 					for (int i = 1; i <= static_cast<int>(core_fa_count); ++i)
 					{
-						std::pair<double, double> v = pFunction(fa_step, i, 0, 1);
+						std::pair<double, double> v = pFunction(fa_step, i, 0, debug);
 						m_coordinates.push_back(v);
 					}
 				}

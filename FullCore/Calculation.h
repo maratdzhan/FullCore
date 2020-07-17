@@ -8,7 +8,7 @@ struct Calculation
 
 	void SetFilesNames(const std::set<std::string>& _filesList);
 	void SetInitializing();
-	std::map<std::string, std::string> GetFilesSet() const;
+	MSS GetFilesSet() const;
 	std::string GetFileByName(const std::string& name) const;
 	SS List() const;
 	void SetTestName(const std::string& _name);
@@ -16,15 +16,15 @@ struct Calculation
 	SS GetFilesNames() const;
 	bool IsCalculationInitialized() const;
 	void SetMap(const std::string& _key, const std::string& _value);
-	void CopyPathsMap(const std::map<std::string, std::string>& _map);
-	std::map<std::string, std::string> PathsMap() const;
+	void CopyPathsMap(const MSS& _map);
+	MSS PathsMap() const;
 
 private:
 	bool m_isInitialized;
 	SS m_filesList;
 	SS m_filesName;
 	std::string m_name;
-	std::map<std::string, std::string> m_filesListMap;
+	MSS m_filesListMap;
 };
 
 
@@ -51,7 +51,7 @@ void Calculation::SetInitializing()
 	m_isInitialized = true;
 }
 
-std::map<std::string, std::string> Calculation::GetFilesSet() const
+MSS Calculation::GetFilesSet() const
 {
 	return m_filesListMap;
 }
@@ -99,13 +99,13 @@ void Calculation::SetMap(const std::string& _key, const std::string& _value)
 	m_filesListMap[_key] = _value;
 }
 
-void Calculation::CopyPathsMap(const std::map<std::string, std::string>& _map)
+void Calculation::CopyPathsMap(const MSS& _map)
 {
 	if (!_map.empty())
 		m_filesListMap = _map;
 }
 
-std::map<std::string, std::string> Calculation::PathsMap() const
+MSS Calculation::PathsMap() const
 {
 	return m_filesListMap;
 }

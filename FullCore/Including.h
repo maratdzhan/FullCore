@@ -11,5 +11,6 @@
 #include <set>
 
 
-using VS=std::vector<std::string>;
-using SS=std::set<std::string>;
+using VS = std::vector<std::string>;
+using SS = std::set<std::string>;
+using MSS = std::map<std::string, std::string>;

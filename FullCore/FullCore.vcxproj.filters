@@ -80,5 +80,8 @@
     <ClInclude Include="Modifier_coefficient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Commands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
